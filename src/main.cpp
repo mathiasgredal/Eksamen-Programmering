@@ -29,8 +29,47 @@ auto main(int argc, char* argv[]) -> int {
         std::cout << "Available backends: " << std::endl;
         bgfx::RendererType::Enum rendererTypes[bgfx::RendererType::Count];
         auto num = bgfx::getSupportedRenderers(bgfx::RendererType::Count, rendererTypes);
+
         for(auto i = 0; i < num; i++) {
-            std::cout << fmt::format("    - {}", bgfx::getRendererName(rendererTypes[i])) << std::endl;
+            std::cout << "    - ";
+
+            switch (rendererTypes[i])
+            {
+            case bgfx::RendererType::Noop:
+                std::cout << "Noop";
+                break;
+            case bgfx::RendererType::Direct3D9:
+                std::cout << "DirectX9";
+                break;
+            case bgfx::RendererType::Direct3D11:
+                std::cout << "DirectX11";
+                break;
+            case bgfx::RendererType::Direct3D12:
+                std::cout << "DirectX12";
+                break;
+            case bgfx::RendererType::Gnm:
+                std::cout << "Gnm";
+                break;
+            case bgfx::RendererType::Metal:
+                std::cout << "Metal";
+                break;
+            case bgfx::RendererType::Nvn:
+                std::cout << "Nvn";
+                break;
+            case bgfx::RendererType::Vulkan:
+                std::cout << "Vulkan";
+                break;
+            case bgfx::RendererType::OpenGLES:
+                std::cout << "OpenGLES";
+                break;
+            case bgfx::RendererType::OpenGL:
+                std::cout << "OpenGL";
+                break;
+            case bgfx::RendererType::WebGPU:
+                std::cout << "WebGPU";
+                break;
+            }
+            std::cout << std::endl;
         }
         exit(0);
     }
@@ -44,6 +83,7 @@ auto main(int argc, char* argv[]) -> int {
 //            backend =  bgfx::RendererType::OpenGL;
 //        else if (tolower(backend_string) == "vulkan")
 //            backend =  bgfx::RendererType::Vulkan;
+
     }
 
 
