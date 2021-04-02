@@ -77,9 +77,13 @@ auto main(int argc, char* argv[]) -> int {
     auto backend = bgfx::RendererType::Count;
     if(result.count("backend")) {
         auto backend_string = result["backend"].as<std::string>();
+        std::cout << "Yeet: " << backend_string << std::endl;
 
-        if(backend_string == "OpenGL") {
-        }
+//        if(tolower(backend_string).find("opengl") != std::string::npos)
+//            backend =  bgfx::RendererType::OpenGL;
+//        else if (tolower(backend_string) == "vulkan")
+//            backend =  bgfx::RendererType::Vulkan;
+
     }
 
 

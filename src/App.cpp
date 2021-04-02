@@ -5,7 +5,7 @@ void App::glfw_errorCallback(int error, const char *description)
     throw std::runtime_error(fmt::format("ERROR{}: {}", error, description));
 }
 
-void App::glfw_windowResizeCallback(GLFWwindow *window, int width, int height)
+void App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height)
 {
     bgfx::reset(width, height, BGFX_RESET_VSYNC);
 }
