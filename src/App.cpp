@@ -10,7 +10,7 @@ void App::glfw_windowResizeCallback(GLFWwindow *window, int width, int height)
     bgfx::reset(width, height, BGFX_RESET_VSYNC);
 }
 
-void App::createWindow()
+void App::createWindow(bgfx::RendererType::Enum backend)
 {
     glfwSetErrorCallback(App::glfw_errorCallback);
 
@@ -33,7 +33,7 @@ void App::createWindow()
     bgfx::renderFrame();
 
     bgfx::Init init;
-    init.type = bgfx::RendererType::Noop;  // Set vulkan rendering
+    init.type = backend;  // Set vulkan rendering
     init.resolution.reset = BGFX_RESET_VSYNC;   // Use vsync
     init.resolution.width = window_width;
     init.resolution.height = window_height;
@@ -53,10 +53,10 @@ void App::createWindow()
     bgfx::setDebug(BGFX_DEBUG_NONE);
 }
 
-App::App() : m_viewId(0)
+App::App(bgfx::RendererType::Enum backend) : m_viewId(0)
 {
     // Create window with GLFW
-    createWindow();
+    createWindow(backend);
 
     // Clear view with blue color(#68c4e8)
     bgfx::setViewClear(m_viewId, BGFX_CLEAR_COLOR, 0x68c4e8ff);

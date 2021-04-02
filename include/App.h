@@ -36,14 +36,14 @@
 class App
 {
 public:
-    App();
+    App(bgfx::RendererType::Enum backend);
     ~App();
     void run();
 
 private:
     static void glfw_errorCallback(int error, const char *description);
     static void glfw_windowResizeCallback(GLFWwindow* window, int width, int height);
-    void createWindow();
+    void createWindow(bgfx::RendererType::Enum backend);
     void drawGUI();
     void drawVG();
 

@@ -1,8 +1,16 @@
+#include <string>
+#include <algorithm>
+#include <locale>
 #include <cxxopts.hpp>
 
 #include "../include/App.h"
 
-int main(int argc, char* argv[]) {
+auto tolower(std::string str) -> std::string {
+    std::transform(str.begin(), str.end(), str.begin(), static_cast<int(*)(int)>(std::tolower));
+    return str;
+}
+
+auto main(int argc, char* argv[]) -> int {
     cxxopts::Options options(argv[0], " - This is a demo for a 2D rigidbody physics engine");
 
     options.add_options()
@@ -18,17 +26,26 @@ int main(int argc, char* argv[]) {
     }
 
     if(result.count("list-backends")) {
-        std::cout << "Available ,backends: " << std::endl;
+        std::cout << "Available backends: " << std::endl;
         bgfx::RendererType::Enum rendererTypes[bgfx::RendererType::Count];
-        uint8_t num = bgfx::getSupportedRenderers(bgfx::RendererType::Count, rendererTypes);
-        for(int i = 0; i < num; i++) {
+        auto num = bgfx::getSupportedRenderers(bgfx::RendererType::Count, rendererTypes);
+        for(auto i = 0; i < num; i++) {
             std::cout << fmt::format("    - {}", bgfx::getRendererName(rendererTypes[i])) << std::endl;
         }
         exit(0);
     }
 
+    auto backend = bgfx::RendererType::Count;
+    if(result.count("backend")) {
+        auto backend_string = result["backend"].as<std::string>();
+        if(tolower(backend_string).find("opengl") != std::string::npos)
+            backend =  bgfx::RendererType::OpenGL;
+        else if (tolower(backend_string) == "vulkan")
+            backend =  bgfx::RendererType::Vulkan;
+    }
 
-    auto app = App();
+
+    auto app = App(backend);
 
     try {
         app.run();
