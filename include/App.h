@@ -29,6 +29,10 @@
 
 #include <nanovg.h>
 
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(fonts);
+
 class App
 {
 public:

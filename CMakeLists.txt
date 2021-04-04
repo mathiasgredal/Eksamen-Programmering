@@ -59,11 +59,18 @@ target_include_directories(nanovg PUBLIC
     "${bgfx_SOURCE_DIR}/bgfx/3rdparty")
 target_link_libraries(nanovg bgfx)
 
+## Assets
+set(ASSET_DIR "${CMAKE_SOURCE_DIR}/assets")
+cmrc_add_resource_library(fonts WHENCE "${ASSET_DIR}/fonts" PREFIX fonts
+    "${ASSET_DIR}/fonts/Roboto-Regular.ttf"
+    "${ASSET_DIR}/fonts/FreeSerif.ttf"
+    "${ASSET_DIR}/fonts/NotoEmoji-Regular.ttf")
+
 ## Targets
 add_executable(demo "src/main.cpp"
     "src/App.cpp" "include/App.h"
     "src/Util.cpp" "include/Util.h")
-target_link_libraries(demo glfw bgfx imgui nanovg fmt cxxopts)
+target_link_libraries(demo glfw bgfx imgui nanovg fmt cxxopts fonts)
 target_precompile_headers(demo PUBLIC
     "<fmt/core.h>" "<cxxopts.hpp>" "<bgfx/bgfx.h>" "<GLFW/glfw3.h>"
      "<bx/bx.h>" "<bgfx/platform.h>" "<bx/math.h>" "<bx/math.h>"

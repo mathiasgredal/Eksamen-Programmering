@@ -71,6 +71,14 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
     // Init NanoVG
     m_ctx = nvgCreate(1, m_viewId);
+    auto fs = cmrc::fonts::get_filesystem();
+    auto serifFile = fs.open("fonts/FreeSerif.ttf");
+    auto serifData = std::string_view(serifFile.begin(), serifFile.end() - serifFile.begin());
+    nvgCreateFontMem(m_ctx, "regular", (unsigned char*)serifData.data(), serifData.size(), 1);
+
+    auto emojiFile = fs.open("fonts/NotoEmoji-Regular.ttf");
+    auto emojiData = std::string_view(emojiFile.begin(), emojiFile.end() - emojiFile.begin());
+    nvgCreateFontMem(m_ctx, "emoji", (unsigned char*)emojiData.data(), emojiData.size(), 1);
 }
 
 App::~App()
@@ -119,9 +127,21 @@ auto App::run() -> void
 auto App::drawVG() -> void
 {
     nvgBeginPath(m_ctx);
-    nvgCircle(m_ctx, 30, 30, 5);
-    nvgFillColor(m_ctx, nvgRGBA(220,160,0,200));
-    nvgFill(m_ctx);
+    nvgRect(m_ctx, 40, window_height-window_height*0.3, 100, 150);
+    nvgStrokeWidth(m_ctx, 15);
+    nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
+    nvgLineJoin(m_ctx, NVG_BEVEL);
+    nvgStroke(m_ctx);
+
+    nvgFontSize(m_ctx, 36);
+    nvgFontFace(m_ctx, "regular");
+    nvgText(m_ctx, 150, window_height-window_height*0.2, "This is some text", NULL);
+
+    nvgFontSize(m_ctx, 36*4);
+    nvgFontFace(m_ctx, "emoji");
+    nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
+    nvgText(m_ctx, 30, window_height-window_height*0.4, "😃🎉🍆", NULL);
+
 }
 
 ///
@@ -129,13 +149,31 @@ auto App::drawVG() -> void
 ///
 auto App::drawGUI() -> void
 {
-    ImGui::Begin("Another Window");
-    ImGui::Text("Hello from another window!");
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::Begin("Stats");
     ImGui::Text(fmt::format("Backend: {}", bgfx::getRendererName( bgfx::getRendererType())).c_str());
+    ImGui::Text(fmt::format("FPS: {:.1f}", ImGui::GetIO().Framerate).c_str());
+//    ImGui::Text(fmt::format("CPU Time: {}", bgfx::getStats()->cpuTimeFrame).c_str());
 
-    ImGui::Text(fmt::format("FPS: {}", ImGui::GetIO().Framerate).c_str());
-    if (ImGui::Button("Close Me")) {
-        std::cout << "Hello" << std::endl;
-    }
+    ImGui::Text(fmt::format("GPU Time: {:.2f}ms", (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000000.f).c_str());
+
+
     ImGui::End();
+
+    ImGui::SetNextWindowSize(ImVec2(window_width*0.251, window_height));
+    ImGui::SetNextWindowPos(ImVec2(window_width*0.75, 0));
+
+    ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+
+    bool show_window = true;
+    ImGui::Begin("Inspector", &show_window,  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove);
+    ImGui::Text("Hello from main window!");
+
+    ImGui::End();
+
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+
+
 }
