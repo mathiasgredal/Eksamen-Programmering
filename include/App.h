@@ -2,10 +2,6 @@
 
 #include <iostream>
 #include <vector>
-#include <cmath>
-#include <cstring>
-#include <chrono>
-#include <stdio.h>
 
 #include <fmt/core.h>
 
@@ -36,16 +32,17 @@
 class App
 {
 public:
-    App(bgfx::RendererType::Enum backend);
+    App(bgfx::RendererType::Enum backend, bool _vsync = true);
     ~App();
-    void run();
+    auto run() -> void;
 
 private:
-    static void glfw_errorCallback(int error, const char *description);
-    static void glfw_windowResizeCallback(GLFWwindow* window, int width, int height);
-    void createWindow(bgfx::RendererType::Enum backend);
-    void drawGUI();
-    void drawVG();
+    static auto glfw_errorCallback(int error, const char *description) -> void ;
+    static auto glfw_windowResizeCallback(GLFWwindow* window, int width, int height) -> void;
+
+    auto createWindow(bgfx::RendererType::Enum backend) -> void;
+    auto drawGUI() -> void;
+    auto drawVG() -> void;
 
     GLFWwindow* m_window;
     const std::string project_name = "Programmering eksamen";
@@ -53,6 +50,7 @@ private:
     int window_width = 800;
 
     uint32_t m_frameNumber = 0;
+    bool vsync = true;
     const bgfx::ViewId m_viewId;
     NVGcontext* m_ctx;
 };

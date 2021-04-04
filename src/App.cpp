@@ -1,16 +1,17 @@
 #include "../include/App.h"
 
-void App::glfw_errorCallback(int error, const char *description)
+auto App::glfw_errorCallback(int error, const char *description) -> void
 {
     throw std::runtime_error(fmt::format("ERROR{}: {}", error, description));
 }
 
-void App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height)
+auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
 {
-    bgfx::reset(width, height, BGFX_RESET_VSYNC);
+    auto app = (App*)glfwGetWindowUserPointer(window);
+    bgfx::reset(width, height, app->vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
 }
 
-void App::createWindow(bgfx::RendererType::Enum backend)
+auto App::createWindow(bgfx::RendererType::Enum backend) -> void
 {
     glfwSetErrorCallback(App::glfw_errorCallback);
 
@@ -27,6 +28,7 @@ void App::createWindow(bgfx::RendererType::Enum backend)
 
     // Handle window resize
     glfwSetWindowSizeCallback(m_window, App::glfw_windowResizeCallback);
+    glfwSetWindowUserPointer(m_window, (void *)this);
 
     // Calling renderFrame before init sets main thread to be render thread
     // See: https://bkaradzic.github.io/bgfx/internals.html
@@ -34,7 +36,7 @@ void App::createWindow(bgfx::RendererType::Enum backend)
 
     bgfx::Init init;
     init.type = backend;  // Set vulkan rendering
-    init.resolution.reset = BGFX_RESET_VSYNC;   // Use vsync
+    init.resolution.reset = vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE;   // Use vsync
     init.resolution.width = window_width;
     init.resolution.height = window_height;
 
@@ -53,7 +55,7 @@ void App::createWindow(bgfx::RendererType::Enum backend)
     bgfx::setDebug(BGFX_DEBUG_NONE);
 }
 
-App::App(bgfx::RendererType::Enum backend) : m_viewId(0)
+App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewId(0)
 {
     // Create window with GLFW
     createWindow(backend);
@@ -84,7 +86,7 @@ App::~App()
 ///
 /// \brief App::run Main loop for the game
 ///
-void App::run()
+auto App::run() -> void
 {
     while (!glfwWindowShouldClose(m_window)) {
         glfwPollEvents();
@@ -114,7 +116,7 @@ void App::run()
 ///
 /// \brief App::drawVG Draws vector graphics using nanovg
 ///
-void App::drawVG()
+auto App::drawVG() -> void
 {
     nvgBeginPath(m_ctx);
     nvgCircle(m_ctx, 30, 30, 5);
@@ -125,7 +127,7 @@ void App::drawVG()
 ///
 /// \brief App::drawGUI Draws the user interface with ImGui
 ///
-void App::drawGUI()
+auto App::drawGUI() -> void
 {
     ImGui::Begin("Another Window");
     ImGui::Text("Hello from another window!");
