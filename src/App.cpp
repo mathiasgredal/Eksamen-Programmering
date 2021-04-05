@@ -8,10 +8,10 @@ auto App::glfw_errorCallback(int error, const char *description) -> void
 auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
-    app->windowWidth = width;
-    app->windowHeight = height;
+    app->m_windowWidth = width;
+    app->m_windowHeight = height;
 
-    bgfx::reset(app->scaledWidth(), app->scaledHeight(), (app->vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE));
+    bgfx::reset(app->getWindowWidth(), app->getWindowHeight(), (app->vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE));
 }
 
 auto App::createWindow(bgfx::RendererType::Enum backend) -> void
@@ -24,7 +24,7 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(windowWidth, windowHeight, project_name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, project_name.c_str(), nullptr, nullptr);
 
     if(!m_window)
         throw std::runtime_error("ERROR: Failed to create window");
@@ -40,8 +40,8 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     bgfx::Init init;
     init.type = backend;
     init.resolution.reset = (vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE);   // Use vsync
-    init.resolution.width = scaledWidth();
-    init.resolution.height = scaledHeight();
+    init.resolution.width = getWindowWidth();
+    init.resolution.height = getWindowHeight();
 
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
     init.platformData.ndt = glfwGetX11Display();
@@ -63,18 +63,15 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
     // Create window with GLFW
     createWindow(backend);
 
-    int framebufWidth, framebufHeight;
-    glfwGetFramebufferSize(m_window, &framebufWidth, &framebufHeight);
-    scale = framebufHeight/(float)windowHeight;
-
-    std::cout << "Scale: " << scale << std::endl;
+    // Calculate scale
+    m_scale = (float)getWindowHeight()/m_windowHeight;
 
     // Clear view with blue color(#68c4e8)
     bgfx::setViewClear(m_viewId, BGFX_CLEAR_COLOR, 0x68c4e8ff);
     bgfx::setViewRect(m_viewId, 0, 0, bgfx::BackbufferRatio::Equal);
 
     // Init ImGUI
-    imguiCreate(14*scale);
+    imguiCreate(28);
     ImGui_ImplGlfw_InitForOther(m_window, true);
     ImGui::StyleColorsDark();
 
@@ -109,23 +106,34 @@ auto App::run() -> void
         // Run physics
 
         // Clear screen
-        bgfx::setViewRect(0, 0, 0, scaledWidth(), scaledHeight());
+        bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
         bgfx::touch(m_viewId);
 
         // Draw ImGui
         ImGui_ImplGlfw_NewFrame();
+
         ImGuiIO& io = ImGui::GetIO();
-        io.DisplaySize = ImVec2( (float)scaledWidth(), (float)scaledHeight());
-        io.DisplayFramebufferScale = ImVec2(scale, scale);
+        io.DisplaySize = ImVec2( getWindowWidth(), getWindowHeight());
+        io.DisplayFramebufferScale = ImVec2(m_scale, m_scale);
         double mx, my;
         glfwGetCursorPos(m_window, &mx, &my);
-        io.MousePos = ImVec2(mx*scale, my*scale);
+        io.MousePos = ImVec2(mx*m_scale, my*m_scale);
+
+        std::cout << "SCALE: " << m_scale << std::endl;
+
+        // Setup Dear ImGui style
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImGuiStyle styleold = style; // Backup colors
+        style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
+        style.ScaleAllSizes(m_scale);
+        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
+
         ImGui::NewFrame();
         drawGUI();
         imguiEndFrame();
 
         // Draw nanovg
-        nvgBeginFrame(m_ctx, scaledWidth(), scaledHeight(), 1.0f);
+        nvgBeginFrame(m_ctx, getWindowWidth(), getWindowHeight(), 1.0f);
         drawVG();
         nvgEndFrame(m_ctx);
 
@@ -142,7 +150,7 @@ auto App::run() -> void
 auto App::drawVG() -> void
 {
     nvgBeginPath(m_ctx);
-    nvgRect(m_ctx, 40, scaledHeight()-scaledHeight()*0.3, 100, 150);
+    nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
     nvgStrokeWidth(m_ctx, 15);
     nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
     nvgLineJoin(m_ctx, NVG_BEVEL);
@@ -150,14 +158,16 @@ auto App::drawVG() -> void
 
     nvgFontSize(m_ctx, 36);
     nvgFontFace(m_ctx, "regular");
-    nvgText(m_ctx, 150, scaledHeight()-scaledHeight()*0.2, "This is some text", NULL);
+    nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
 
     nvgFontSize(m_ctx, 36*4);
     nvgFontFace(m_ctx, "emoji");
     nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
-    nvgText(m_ctx, 30, scaledHeight()-scaledHeight()*0.4, "😃🎉🍆", NULL);
+    nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
 
 }
+
+
 
 ///
 /// \brief App::drawGUI Draws the user interface with ImGui
@@ -166,7 +176,6 @@ auto App::drawGUI() -> void
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Stats");
-    ImGui::Text(fmt::format("Scale: {}", scale).c_str());
     ImGui::Text(fmt::format("Backend: {}", bgfx::getRendererName( bgfx::getRendererType())).c_str());
     ImGui::Text(fmt::format("FPS: {:.1f}", ImGui::GetIO().Framerate).c_str());
 
@@ -181,8 +190,8 @@ auto App::drawGUI() -> void
     ImGui::Text(fmt::format("GPU Time: {:.3f}ms", gpuTime).c_str());
     ImGui::End();
 
-    ImGui::SetNextWindowSize(ImVec2(windowWidth*2*0.251, windowHeight*2));
-    ImGui::SetNextWindowPos(ImVec2(windowWidth*2*0.75, 0));
+    ImGui::SetNextWindowSize(ImVec2(getWindowWidth()*0.251, getWindowHeight()));
+    ImGui::SetNextWindowPos(ImVec2(getWindowWidth()*0.75, 0));
 
     ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
@@ -196,13 +205,16 @@ auto App::drawGUI() -> void
     ImGui::PopStyleColor();
 }
 
-
-int App::scaledHeight()
+auto App::getWindowHeight() -> int
 {
-    return windowHeight*scale;
+    int height;
+    glfwGetFramebufferSize(m_window, nullptr, &height);
+    return height;
 }
 
-int App::scaledWidth()
+auto App::getWindowWidth() -> int
 {
-    return windowWidth*scale;
+    int width;
+    glfwGetFramebufferSize(m_window, &width, nullptr);
+    return width;
 }

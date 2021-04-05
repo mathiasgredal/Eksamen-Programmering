@@ -49,13 +49,12 @@ private:
 
     GLFWwindow* m_window;
     const std::string project_name = "Programmering eksamen";
+    int m_windowHeight = 600;
+    int m_windowWidth = 800;
+    float m_scale = 1;
 
-    auto scaledHeight() -> int;
-    auto scaledWidth() -> int;
-
-    int windowHeight = 600;
-    int windowWidth = 800;
-    float scale = 2.0;
+    auto getWindowHeight() -> int;
+    auto getWindowWidth() -> int;
 
     typedef std::chrono::high_resolution_clock Clock;
     std::chrono::time_point<std::chrono::high_resolution_clock> t_begin;
