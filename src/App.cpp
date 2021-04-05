@@ -174,7 +174,7 @@ auto App::drawGUI() -> void
 
 #if BX_PLATFORM_OSX
     float gpuTime = (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000.f;
-#elif
+#else
     float gpuTime = (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000000.f;
 #endif
     ImGui::Text(fmt::format("CPU Time: {:.3f}ms", cpuTime).c_str());
