@@ -117,7 +117,12 @@ auto App::run() -> void
         double mx, my;
         glfwGetCursorPos(m_window, &mx, &my);
         io.MousePos = ImVec2(mx*m_scale, my*m_scale);
-        ImGui::GetStyle().ScaleAllSizes(m_scale);
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImGuiStyle styleold = style;
+        style = ImGuiStyle();
+        style.ScaleAllSizes(m_scale);
+        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));
 
         ImGui::NewFrame();
         drawGUI();
