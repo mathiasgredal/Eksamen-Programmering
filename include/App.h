@@ -2,8 +2,7 @@
 
 #include <iostream>
 #include <vector>
-
-#include <fmt/core.h>
+#include <chrono>
 
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
@@ -26,12 +25,12 @@
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
-
 #include <nanovg.h>
-
 #include <cmrc/cmrc.hpp>
-
 CMRC_DECLARE(fonts);
+#include <fmt/core.h>
+
+#include "../include/Util.h"
 
 class App
 {
@@ -50,8 +49,17 @@ private:
 
     GLFWwindow* m_window;
     const std::string project_name = "Programmering eksamen";
-    int window_height = 600;
-    int window_width = 800;
+
+    auto scaledHeight() -> int;
+    auto scaledWidth() -> int;
+
+    int windowHeight = 600;
+    int windowWidth = 800;
+    float scale = 2.0;
+
+    typedef std::chrono::high_resolution_clock Clock;
+    std::chrono::time_point<std::chrono::high_resolution_clock> t_begin;
+    std::chrono::time_point<std::chrono::high_resolution_clock> t_end;
 
     uint32_t m_frameNumber = 0;
     bool vsync = true;

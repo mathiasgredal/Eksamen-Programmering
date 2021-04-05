@@ -6,6 +6,7 @@
 #include <locale>
 
 #include <bgfx/bgfx.h>
+#include <cmrc/cmrc.hpp>
 
 namespace Util {
 const std::unordered_map<bgfx::RendererType::Enum, std::string> backend_names = {
@@ -36,5 +37,8 @@ auto vectorContainsElement(const T &elem, const std::vector<T> &list) -> bool
 auto getBackendName(bgfx::RendererType::Enum backend) -> std::string;
 auto getBackendFromName(std::string backendName) -> bgfx::RendererType::Enum;
 auto getValidBackends() -> std::vector<bgfx::RendererType::Enum>;
+
+// File helper functions
+auto getFileData(const cmrc::file& file) -> u_int8_t*;
 }
 

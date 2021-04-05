@@ -76,3 +76,29 @@ target_precompile_headers(demo PUBLIC
      "<bx/bx.h>" "<bgfx/platform.h>" "<bx/math.h>" "<bx/math.h>"
      "<imgui.h>" "<imgui_impl_glfw.h>" "<nanovg.h>") # Optimize compile times with precompiled headers
 
+## Bundle executable
+if(APPLE)
+    set_target_properties(demo PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST ${ASSET_DIR}/Info.plist
+    )
+
+    install(TARGETS demo
+        BUNDLE DESTINATION . COMPONENT Runtime
+        RUNTIME DESTINATION bin COMPONENT Runtime
+    )
+
+    # Note Mac specific extension .app
+    set(APPS "\${CMAKE_INSTALL_PREFIX}/Demo.app")
+
+    # Directories to look for dependencies
+    set(DIRS ${CMAKE_BINARY_DIR})
+
+    install(CODE "include(BundleUtilities)
+        fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")")
+
+    set(CPACK_GENERATOR "DRAGNDROP")
+    include(CPack)
+endif()
+
+

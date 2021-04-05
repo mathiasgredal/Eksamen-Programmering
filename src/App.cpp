@@ -8,7 +8,10 @@ auto App::glfw_errorCallback(int error, const char *description) -> void
 auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
-    bgfx::reset(width, height, app->vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
+    app->windowWidth = width;
+    app->windowHeight = height;
+
+    bgfx::reset(app->scaledWidth(), app->scaledHeight(), (app->vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE));
 }
 
 auto App::createWindow(bgfx::RendererType::Enum backend) -> void
@@ -21,7 +24,7 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(window_width, window_height, project_name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(windowWidth, windowHeight, project_name.c_str(), nullptr, nullptr);
 
     if(!m_window)
         throw std::runtime_error("ERROR: Failed to create window");
@@ -35,10 +38,10 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     bgfx::renderFrame();
 
     bgfx::Init init;
-    init.type = backend;  // Set vulkan rendering
-    init.resolution.reset = vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE;   // Use vsync
-    init.resolution.width = window_width;
-    init.resolution.height = window_height;
+    init.type = backend;
+    init.resolution.reset = (vsync? BGFX_RESET_VSYNC : BGFX_RESET_NONE);   // Use vsync
+    init.resolution.width = scaledWidth();
+    init.resolution.height = scaledHeight();
 
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
     init.platformData.ndt = glfwGetX11Display();
@@ -60,12 +63,18 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
     // Create window with GLFW
     createWindow(backend);
 
+    int framebufWidth, framebufHeight;
+    glfwGetFramebufferSize(m_window, &framebufWidth, &framebufHeight);
+    scale = framebufHeight/(float)windowHeight;
+
+    std::cout << "Scale: " << scale << std::endl;
+
     // Clear view with blue color(#68c4e8)
     bgfx::setViewClear(m_viewId, BGFX_CLEAR_COLOR, 0x68c4e8ff);
     bgfx::setViewRect(m_viewId, 0, 0, bgfx::BackbufferRatio::Equal);
 
     // Init ImGUI
-    imguiCreate(22);
+    imguiCreate(14*scale);
     ImGui_ImplGlfw_InitForOther(m_window, true);
     ImGui::StyleColorsDark();
 
@@ -73,12 +82,10 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
     m_ctx = nvgCreate(1, m_viewId);
     auto fs = cmrc::fonts::get_filesystem();
     auto serifFile = fs.open("fonts/FreeSerif.ttf");
-    auto serifData = std::string_view(serifFile.begin(), serifFile.end() - serifFile.begin());
-    nvgCreateFontMem(m_ctx, "regular", (unsigned char*)serifData.data(), serifData.size(), 1);
+    nvgCreateFontMem(m_ctx, "regular", Util::getFileData(serifFile), serifFile.size(), 0);
 
     auto emojiFile = fs.open("fonts/NotoEmoji-Regular.ttf");
-    auto emojiData = std::string_view(emojiFile.begin(), emojiFile.end() - emojiFile.begin());
-    nvgCreateFontMem(m_ctx, "emoji", (unsigned char*)emojiData.data(), emojiData.size(), 1);
+    nvgCreateFontMem(m_ctx, "emoji", Util::getFileData(emojiFile) ,emojiFile.size(), 0);
 }
 
 App::~App()
@@ -97,25 +104,33 @@ App::~App()
 auto App::run() -> void
 {
     while (!glfwWindowShouldClose(m_window)) {
+        auto t_start = Clock::now();
         glfwPollEvents();
-        glfwGetFramebufferSize(m_window, &window_width, &window_height);
         // Run physics
 
         // Clear screen
-        bgfx::setViewRect(0, 0, 0, window_width, window_height);
+        bgfx::setViewRect(0, 0, 0, scaledWidth(), scaledHeight());
         bgfx::touch(m_viewId);
 
         // Draw ImGui
         ImGui_ImplGlfw_NewFrame();
+        ImGuiIO& io = ImGui::GetIO();
+        io.DisplaySize = ImVec2( (float)scaledWidth(), (float)scaledHeight());
+        io.DisplayFramebufferScale = ImVec2(scale, scale);
+        double mx, my;
+        glfwGetCursorPos(m_window, &mx, &my);
+        io.MousePos = ImVec2(mx*scale, my*scale);
         ImGui::NewFrame();
         drawGUI();
         imguiEndFrame();
 
         // Draw nanovg
-        nvgBeginFrame(m_ctx, window_width, window_height, 1.0f);
+        nvgBeginFrame(m_ctx, scaledWidth(), scaledHeight(), 1.0f);
         drawVG();
         nvgEndFrame(m_ctx);
 
+        t_begin=t_start;
+        t_end = Clock::now();
         // Render frame
         bgfx::frame();
     }
@@ -127,7 +142,7 @@ auto App::run() -> void
 auto App::drawVG() -> void
 {
     nvgBeginPath(m_ctx);
-    nvgRect(m_ctx, 40, window_height-window_height*0.3, 100, 150);
+    nvgRect(m_ctx, 40, scaledHeight()-scaledHeight()*0.3, 100, 150);
     nvgStrokeWidth(m_ctx, 15);
     nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
     nvgLineJoin(m_ctx, NVG_BEVEL);
@@ -135,12 +150,12 @@ auto App::drawVG() -> void
 
     nvgFontSize(m_ctx, 36);
     nvgFontFace(m_ctx, "regular");
-    nvgText(m_ctx, 150, window_height-window_height*0.2, "This is some text", NULL);
+    nvgText(m_ctx, 150, scaledHeight()-scaledHeight()*0.2, "This is some text", NULL);
 
     nvgFontSize(m_ctx, 36*4);
     nvgFontFace(m_ctx, "emoji");
     nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
-    nvgText(m_ctx, 30, window_height-window_height*0.4, "😃🎉🍆", NULL);
+    nvgText(m_ctx, 30, scaledHeight()-scaledHeight()*0.4, "😃🎉🍆", NULL);
 
 }
 
@@ -151,17 +166,23 @@ auto App::drawGUI() -> void
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Stats");
+    ImGui::Text(fmt::format("Scale: {}", scale).c_str());
     ImGui::Text(fmt::format("Backend: {}", bgfx::getRendererName( bgfx::getRendererType())).c_str());
     ImGui::Text(fmt::format("FPS: {:.1f}", ImGui::GetIO().Framerate).c_str());
-//    ImGui::Text(fmt::format("CPU Time: {}", bgfx::getStats()->cpuTimeFrame).c_str());
 
-    ImGui::Text(fmt::format("GPU Time: {:.2f}ms", (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000000.f).c_str());
+    float cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(t_end-t_begin).count()/1000000.f;
 
-
+#if BX_PLATFORM_OSX
+    float gpuTime = (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000.f;
+#elif
+    float gpuTime = (bgfx::getStats()->gpuTimeEnd-bgfx::getStats()->gpuTimeBegin)/1000000.f;
+#endif
+    ImGui::Text(fmt::format("CPU Time: {:.3f}ms", cpuTime).c_str());
+    ImGui::Text(fmt::format("GPU Time: {:.3f}ms", gpuTime).c_str());
     ImGui::End();
 
-    ImGui::SetNextWindowSize(ImVec2(window_width*0.251, window_height));
-    ImGui::SetNextWindowPos(ImVec2(window_width*0.75, 0));
+    ImGui::SetNextWindowSize(ImVec2(windowWidth*2*0.251, windowHeight*2));
+    ImGui::SetNextWindowPos(ImVec2(windowWidth*2*0.75, 0));
 
     ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
@@ -171,9 +192,17 @@ auto App::drawGUI() -> void
     ImGui::Text("Hello from main window!");
 
     ImGui::End();
-
     ImGui::PopStyleVar();
     ImGui::PopStyleColor();
+}
 
 
+int App::scaledHeight()
+{
+    return windowHeight*scale;
+}
+
+int App::scaledWidth()
+{
+    return windowWidth*scale;
 }

@@ -36,4 +36,7 @@ auto Util::getValidBackends() -> std::vector<bgfx::RendererType::Enum>
     return backendList;
 }
 
-
+auto Util::getFileData(const cmrc::file &file) -> uint8_t*
+{
+    return (uint8_t*)std::string_view(file.begin(), file.end() - file.begin()).data();
+}
