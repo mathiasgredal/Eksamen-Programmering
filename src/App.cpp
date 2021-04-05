@@ -111,22 +111,13 @@ auto App::run() -> void
 
         // Draw ImGui
         ImGui_ImplGlfw_NewFrame();
-
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2( getWindowWidth(), getWindowHeight());
         io.DisplayFramebufferScale = ImVec2(m_scale, m_scale);
         double mx, my;
         glfwGetCursorPos(m_window, &mx, &my);
         io.MousePos = ImVec2(mx*m_scale, my*m_scale);
-
-        std::cout << "SCALE: " << m_scale << std::endl;
-
-        // Setup Dear ImGui style
-        ImGuiStyle& style = ImGui::GetStyle();
-        ImGuiStyle styleold = style; // Backup colors
-        style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
-        style.ScaleAllSizes(m_scale);
-        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
+        ImGui::GetStyle().ScaleAllSizes(m_scale);
 
         ImGui::NewFrame();
         drawGUI();
@@ -164,7 +155,6 @@ auto App::drawVG() -> void
     nvgFontFace(m_ctx, "emoji");
     nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
     nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
-
 }
 
 
