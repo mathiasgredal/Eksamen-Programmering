@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <locale>
+#include <stdint.h>
 
 #include <bgfx/bgfx.h>
 #include <cmrc/cmrc.hpp>
@@ -39,6 +40,6 @@ auto getBackendFromName(std::string backendName) -> bgfx::RendererType::Enum;
 auto getValidBackends() -> std::vector<bgfx::RendererType::Enum>;
 
 // File helper functions
-auto getFileData(const cmrc::file& file) -> u_int8_t*;
+auto getFileData(const cmrc::file& file) -> uint8_t*;
 }
 

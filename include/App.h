@@ -31,6 +31,8 @@ CMRC_DECLARE(fonts);
 #include <fmt/core.h>
 
 #include "../include/Util.h"
+#include "Scene.h"
+
 
 class App
 {
@@ -40,6 +42,10 @@ public:
     auto run() -> void;
 
 private:
+	Scene level;
+	
+
+
     static auto glfw_errorCallback(int error, const char *description) -> void ;
     static auto glfw_windowResizeCallback(GLFWwindow* window, int width, int height) -> void;
 

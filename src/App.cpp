@@ -5,7 +5,7 @@ auto App::glfw_errorCallback(int error, const char *description) -> void
     throw std::runtime_error(fmt::format("ERROR{}: {}", error, description));
 }
 
-auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
+auto App::glfw_windowResizeCallback(GLFWwindow *window, int width, int height) -> void
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
     app->m_windowWidth = width;
@@ -60,6 +60,7 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
 
 App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewId(0)
 {
+
     // Create window with GLFW
     createWindow(backend);
 
@@ -83,6 +84,12 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
     auto emojiFile = fs.open("fonts/NotoEmoji-Regular.ttf");
     nvgCreateFontMem(m_ctx, "emoji", Util::getFileData(emojiFile) ,emojiFile.size(), 0);
+	
+	//create level
+	level = Scene({
+		//Entity(Circle());
+	});
+
 }
 
 App::~App()
