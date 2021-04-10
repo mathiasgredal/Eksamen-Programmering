@@ -30,8 +30,10 @@
 CMRC_DECLARE(fonts);
 #include <fmt/core.h>
 
-#include "../include/Util.h"
+#include "Util.h"
 #include "Scene.h"
+#include "Collision/Circle.h"
+#include "Collision/Rectangle.h"
 
 
 class App
@@ -42,10 +44,6 @@ public:
     auto run() -> void;
 
 private:
-	Scene level;
-	
-
-
     static auto glfw_errorCallback(int error, const char *description) -> void ;
     static auto glfw_windowResizeCallback(GLFWwindow* window, int width, int height) -> void;
 
@@ -53,21 +51,31 @@ private:
     auto drawGUI() -> void;
     auto drawVG() -> void;
 
+    auto getWindowHeight() -> int;
+    auto getWindowWidth() -> int;
+
     GLFWwindow* m_window;
     const std::string project_name = "Programmering eksamen";
     int m_windowHeight = 600;
     int m_windowWidth = 800;
     float m_scale = 1;
 
-    auto getWindowHeight() -> int;
-    auto getWindowWidth() -> int;
-
-    typedef std::chrono::high_resolution_clock Clock;
-    std::chrono::time_point<std::chrono::high_resolution_clock> t_begin;
-    std::chrono::time_point<std::chrono::high_resolution_clock> t_end;
-
     uint32_t m_frameNumber = 0;
     bool vsync = true;
     const bgfx::ViewId m_viewId;
     NVGcontext* m_ctx;
+    Scene m_level;
+
+    typedef std::chrono::high_resolution_clock Clock;
+    std::chrono::time_point<std::chrono::high_resolution_clock> t_begin;
+    std::chrono::time_point<std::chrono::high_resolution_clock> t_end;    
 };
+
+
+
+
+
+
+
+
+

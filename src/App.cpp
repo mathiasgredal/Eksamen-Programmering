@@ -86,9 +86,10 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
     nvgCreateFontMem(m_ctx, "emoji", Util::getFileData(emojiFile) ,emojiFile.size(), 0);
 	
 	//create level
-	level = Scene({
-		//Entity(Circle());
-	});
+    m_level = Scene();
+    m_level.Add(Entity(Vec2d(100, 50), 0, std::make_shared<Circle>(10)));
+    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50)));
+    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
 
 }
 
@@ -111,6 +112,7 @@ auto App::run() -> void
         auto t_start = Clock::now();
         glfwPollEvents();
         // Run physics
+        m_level.Step(ImGui::GetIO().DeltaTime);
 
         // Clear screen
         bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
@@ -152,6 +154,11 @@ auto App::run() -> void
 ///
 auto App::drawVG() -> void
 {
+    // Draw scene entities
+    for(const auto& entity : m_level.getEntities()) {
+        entity.shape->Draw(m_ctx, entity);
+    }
+
     nvgBeginPath(m_ctx);
     nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
     nvgStrokeWidth(m_ctx, 15);
