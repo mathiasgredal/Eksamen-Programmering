@@ -5,7 +5,7 @@ auto App::glfw_errorCallback(int error, const char *description) -> void
     throw std::runtime_error(fmt::format("ERROR{}: {}", error, description));
 }
 
-auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
+auto App::glfw_windowResizeCallback(GLFWwindow *window, int width, int height) -> void
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
     app->m_windowWidth = width;
@@ -60,6 +60,7 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
 
 App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewId(0)
 {
+
     // Create window with GLFW
     createWindow(backend);
 
@@ -83,6 +84,13 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
     auto emojiFile = fs.open("fonts/NotoEmoji-Regular.ttf");
     nvgCreateFontMem(m_ctx, "emoji", Util::getFileData(emojiFile) ,emojiFile.size(), 0);
+	
+	//create level
+    m_level = Scene();
+    m_level.Add(Entity(Vec2d(100, 50), 0, std::make_shared<Circle>(10)));
+    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50)));
+    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
+
 }
 
 App::~App()
@@ -104,6 +112,7 @@ auto App::run() -> void
         auto t_start = Clock::now();
         glfwPollEvents();
         // Run physics
+        m_level.Step(ImGui::GetIO().DeltaTime);
 
         // Clear screen
         bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
@@ -145,6 +154,11 @@ auto App::run() -> void
 ///
 auto App::drawVG() -> void
 {
+    // Draw scene entities
+    for(const auto& entity : m_level.getEntities()) {
+        entity.shape->Draw(m_ctx, entity);
+    }
+
     nvgBeginPath(m_ctx);
     nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
     nvgStrokeWidth(m_ctx, 15);

@@ -69,12 +69,22 @@ cmrc_add_resource_library(fonts WHENCE "${ASSET_DIR}/fonts" PREFIX fonts
 ## Targets
 add_executable(demo "src/main.cpp"
     "src/App.cpp" "include/App.h"
-    "src/Util.cpp" "include/Util.h")
+    "src/Util.cpp" "include/Util.h"
+    "src/Scene.cpp" "include/Scene.h"
+    "src/Vec2d.cpp" "include/Vec2d.h"
+    "src/Entity.cpp" "include/Entity.h"
+    "include/Collision/Shape.h"
+    "src/Collision/Manifold.cpp" "include/Collision/Manifold.h"
+    "src/Collision/Circle.cpp" "include/Collision/Circle.h"
+    "src/Collision/Rectangle.cpp" "include/Collision/Rectangle.h"
+)
 target_link_libraries(demo glfw bgfx imgui nanovg fmt cxxopts fonts)
-target_precompile_headers(demo PUBLIC
-    "<fmt/core.h>" "<cxxopts.hpp>" "<bgfx/bgfx.h>" "<GLFW/glfw3.h>"
-     "<bx/bx.h>" "<bgfx/platform.h>" "<bx/math.h>" "<bx/math.h>"
-     "<imgui.h>" "<imgui_impl_glfw.h>" "<nanovg.h>") # Optimize compile times with precompiled headers
+if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
+     target_precompile_headers(demo PUBLIC
+        "<fmt/core.h>" "<cxxopts.hpp>" "<bgfx/bgfx.h>" "<GLFW/glfw3.h>"
+         "<bx/bx.h>" "<bgfx/platform.h>" "<bx/math.h>" "<bx/math.h>"
+         "<imgui.h>" "<imgui_impl_glfw.h>" "<nanovg.h>") # Optimize compile times with precompiled headers
+endif()
 
 ## Bundle executable
 if(APPLE)

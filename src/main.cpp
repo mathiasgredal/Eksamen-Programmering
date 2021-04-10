@@ -1,5 +1,7 @@
 #include <cxxopts.hpp>
 
+
+#define STB_IMAGE_IMPLEMENTATION
 #include "../include/App.h"
 #include "../include/Util.h"
 
