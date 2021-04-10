@@ -5,42 +5,51 @@ Scene::Scene()
 
 }
 
-Scene::Scene(std::vector<Entity> _entities)
+Scene::Scene(std::vector<std::shared_ptr<Entity>> _entities)
 {
     entities = _entities;
 }
 
-void Scene::Add(const Entity &entity)
+void Scene::Add(std::shared_ptr<Entity> entity)
 {
     entities.push_back(entity);
 }
 
-std::vector<Entity> Scene::getEntities() const
+std::vector<std::shared_ptr<Entity>> Scene::getEntities() const
 {
     return entities;
 }
 
 void Scene::Step(float dT)
 {
-    std::vector<Manifold> collisions = {};
     for(auto& entity : entities) {
+        std::vector<Manifold> collisions = {};
+
         // Check collisions
-        for(const auto& other : entities) {
-            if(&entity == &other) continue;
+        for(auto& other : entities) {
+            if(entity == other) continue;
 
-            if(entity.IsColliding(other))
-                entity.shape.get()->color = nvgRGB(0, 255, 0);
-
-                //collisions.push_back(entity.CreateManifold(other));
-
+            auto manifold = entity->IsColliding(other);
+            if(manifold.isColliding) {
+                entity->shape.get()->color = nvgRGBA(0, 255, 0, 122);
+                collisions.push_back(manifold);
+            }
         }
 
-        // Resolve gravity
-        if(entity.type == SimType::Dynamic) {
-            entity.force += gravity_coeff * entity.mass;
-            entity.velocity += entity.force / entity.mass * dT;
-            entity.position += entity.velocity * dT;
-            entity.force = Vec2d();
+        if(entity->type == SimType::Dynamic) {
+            // Resolve gravity
+            entity->force += gravity_coeff * entity->mass;
+            entity->velocity += entity->force / entity->mass * dT;
+
+            // Resolve collisions
+            for(auto& collision : collisions)
+                collision.Resolve();
+
+            // Resolve velocity
+            entity->position += entity->velocity * dT;
+
+            // Clear forces
+            entity->force = Vec2d();
         }
 
     }

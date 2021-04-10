@@ -87,10 +87,14 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 	
 	//create level
     m_level = Scene();
-    m_level.Add(Entity(Vec2d(100, 50), 0, std::make_shared<Circle>(10)));
+    m_level.Add(std::make_shared<Entity>(Vec2d(400, 50), 0, std::make_shared<Circle>(10), "Small"));
+    m_level.Add(std::make_shared<Entity>(Vec2d(425, 50), 0, std::make_shared<Circle>(10), "Small"));
+    m_level.Add(std::make_shared<Entity>(Vec2d(445, 50), 0, std::make_shared<Circle>(10), "Small"));
+
 //    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50), SimType::Static));
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
-    m_level.Add(Entity(Vec2d(200, 700), 0, std::make_shared<Circle>(200), SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 0, std::make_shared<Circle>(200), "Big", SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), "Big", SimType::Static));
 
 
 }
@@ -157,8 +161,8 @@ auto App::run() -> void
 auto App::drawVG() -> void
 {
     // Draw scene entities
-    for(const auto& entity : m_level.getEntities()) {
-        entity.shape->Draw(m_ctx, entity);
+    for(auto entity : m_level.getEntities()) {
+        entity->shape->Draw(m_ctx, entity);
     }
 
 //    nvgBeginPath(m_ctx);

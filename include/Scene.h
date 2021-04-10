@@ -8,13 +8,13 @@ class Scene
 {
 public:
     Scene();
-    Scene(std::vector<Entity> _entities);
-    void Add(const Entity& entity);
+    Scene(std::vector<std::shared_ptr<Entity>> _entities);
+    void Add(std::shared_ptr<Entity> entity);
     void Step(float dT);
-    std::vector<Entity> getEntities() const;
+    std::vector<std::shared_ptr<Entity>> getEntities() const;
 
 private:
-    std::vector<Entity> entities = {};
+    std::vector<std::shared_ptr<Entity>> entities = {};
     Vec2d gravity_coeff = Vec2d(0, 9.82*6);
 
 };

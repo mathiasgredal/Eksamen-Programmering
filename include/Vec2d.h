@@ -14,7 +14,9 @@ public:
     Vec2d operator/(float a) const;
 
     Vec2d &operator+=(const Vec2d& a);
+    Vec2d &operator-=(const Vec2d& a);
 
     Vec2d operator+(const Vec2d& a) const;
     Vec2d operator-(const Vec2d& a) const;
+    static float Dot(const Vec2d& a, const Vec2d& b);
 };
