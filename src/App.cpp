@@ -93,7 +93,7 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
 //    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50), SimType::Static));
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
-    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 0, std::make_shared<Circle>(200), 1, 10, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 1, 10, SimType::Static));
     m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 1, 1, SimType::Static));
 
 

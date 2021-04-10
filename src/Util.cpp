@@ -40,3 +40,8 @@ auto Util::getFileData(const cmrc::file &file) -> uint8_t*
 {
     return (uint8_t*)std::string_view(file.begin(), file.end() - file.begin()).data();
 }
+
+float Util::RadToDeg(float rad)
+{
+    return rad * 180.f / 3.1415926536f;
+}

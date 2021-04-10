@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Util.h"
 #include "../Vec2d.h"
 #include "Shape.h"
 #include "CollisionHelper.h"

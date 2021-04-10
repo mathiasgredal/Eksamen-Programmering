@@ -41,12 +41,16 @@ void Scene::Step(float dT)
             entity->force += gravity_coeff * entity->mass;
             entity->velocity += entity->force / entity->mass * dT;
 
-            // Resolve collisions
+            // Resolve collisions with impulse
             for(auto& collision : collisions)
-                collision.Resolve();
+                collision.ResolveImpulse();
 
             // Resolve velocity
             entity->position += entity->velocity * dT;
+
+            // Resolve collisions with position correction
+            for(auto& collision : collisions)
+                collision.ResolvePosition();
 
             // Clear forces
             entity->force = Vec2d();

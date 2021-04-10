@@ -6,7 +6,8 @@ class Entity;
 class Manifold {
 public:
     Manifold();
-    void Resolve();
+    void ResolveImpulse();
+    void ResolvePosition();
 
     std::shared_ptr<Entity> entityA;
     std::shared_ptr<Entity> entityB;
