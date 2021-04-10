@@ -6,7 +6,7 @@ Manifold::Manifold()
 
 }
 
-void Manifold::Resolve()
+void Manifold::ResolveImpulse()
 {
     std::cout << "Resolving collision" << std::endl;
     const bool staticA = entityA->type == SimType::Static;
@@ -40,15 +40,24 @@ void Manifold::Resolve()
     // Calculate a combined restitution or bounciness
     float e = entityA->restitution*entityB->restitution;
 
-    // Create an impulse scalar(still need to account for mass and moment of inertia)
+    // Create an impulse scalar
     float j = -(1+e)*contactSpeed/(inverseMassA + inverseMassB);
 
     Vec2d impulse = normal * j;
 
     // Use impulse to modify speed
-    // TODO: account for mass
     entityA->velocity -= impulse * inverseMassA;
     entityB->velocity += impulse * inverseMassB;
+}
 
-    return;
+void Manifold::ResolvePosition()
+{
+    // Position resolution is about reducing the penetration depth a certain percantage
+    // to prevent objects from sinking
+    float maxDepth= 0.05f;
+    float correctionPercentage = 0.4f;
+    float correctionScalar = (std::max(depth - maxDepth, 0.0f)*entityA->mass*entityB->mass/(entityA->mass + entityB->mass));
+    Vec2d correction = normal * correctionScalar * correctionPercentage;
+    entityA->position += entityA->type == SimType::Dynamic? correction / entityA->mass : Vec2d();
+    entityB->position -= entityB->type == SimType::Dynamic? correction / entityB->mass : Vec2d();
 }

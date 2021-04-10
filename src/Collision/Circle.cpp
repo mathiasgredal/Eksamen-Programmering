@@ -14,6 +14,12 @@ void Circle::Draw(NVGcontext *ctx, std::shared_ptr<Entity> entity) const
     nvgCircle(ctx, entity->position.x, entity->position.y, radius);
     nvgFillColor(ctx, color);
     nvgFill(ctx);
+
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, entity->position.x, entity->position.y);
+    nvgLineTo(ctx, entity->position.x + sin(entity->rotation) * radius, entity->position.y + cos(entity->rotation) * radius);
+    nvgStrokeColor(ctx, nvgRGB(0,0,255));
+    nvgStroke(ctx);
 }
 
 Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape *shapeB) const

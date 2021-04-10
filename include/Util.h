@@ -41,5 +41,8 @@ auto getValidBackends() -> std::vector<bgfx::RendererType::Enum>;
 
 // File helper functions
 auto getFileData(const cmrc::file& file) -> uint8_t*;
+
+// Math helpers
+float RadToDeg(float rad);
 }
 
