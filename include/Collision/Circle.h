@@ -8,9 +8,9 @@ class Circle : public Shape {
 public:
     Circle(float _radius);
     float radius;
-    void Draw(NVGcontext *ctx, const Entity &entity) const override;
+    void Draw(NVGcontext *ctx, std::shared_ptr<Entity> entity) const override;
 
-    bool IsColliding(const Entity &entityA, const Entity &entityB, const Shape *shapeB) const override;
-    bool IsColliding(const Entity &entityA, const Entity &entityB, const Circle *shapeB) const override;
-    bool IsColliding(const Entity &entityA, const Entity &entityB, const Rectangle *shapeB) const override;
+    Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape *shapeB) const override;
+    Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Circle *shapeB) const override;
+    Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rectangle *shapeB) const override;
 };

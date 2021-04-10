@@ -1,6 +1,8 @@
 #include "../../include/Entity.h"
 #include "../../include/Collision/Shape.h"
 #include "../../include/Collision/Rectangle.h"
+#include "../../include/Collision/Manifold.h"
+
 
 Rectangle::Rectangle(float _width, float _height)
 {
@@ -8,29 +10,33 @@ Rectangle::Rectangle(float _width, float _height)
     height = _height;
 }
 
-void Rectangle::Draw(NVGcontext *ctx, const Entity &entity) const
+void Rectangle::Draw(NVGcontext *ctx, std::shared_ptr<Entity> entity) const
 {
     nvgBeginPath(ctx);
-    nvgRect(ctx, entity.position.x, entity.position.y, width, height);
+    nvgRect(ctx, entity->position.x, entity->position.y, width, height);
     nvgFillColor(ctx, color);
     nvgFill(ctx);
 }
 
-bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const Shape *shapeB) const
+Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape *shapeB) const
 {
     return shapeB->IsColliding(entityA, entityB, this);
 }
 
-bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const Circle *shapeB) const
+Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Circle *shapeB) const
 {
-//    std::cout << "Rect vs Circle" << std::endl;
-    return true;
+    // std::cout << "Rect vs Circle" << std::endl;
+    Manifold manifold = Manifold();
+    manifold.isColliding = false;
+    return manifold;
 }
 
-bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const Rectangle *shapeB) const
+Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rectangle *shapeB) const
 {
-//    std::cout << "Rect vs Rect" << std::endl;
-    return true;
+    // std::cout << "Rect vs Rect" << std::endl;
+    Manifold manifold = Manifold();
+    manifold.isColliding = false;
+    return manifold;
 }
 
 

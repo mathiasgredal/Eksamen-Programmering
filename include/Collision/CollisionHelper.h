@@ -5,6 +5,6 @@
 class Circle;
 
 namespace Util {
-Manifold CreateManifoldCircleVsCircle(const Entity &entityA, const Circle* circleA,const Entity &entityB, const Circle* circleB);
+Manifold CreateManifoldCircleVsCircle(std::shared_ptr<Entity> entityA, const Circle* circleA, std::shared_ptr<Entity> entityB, const Circle* circleB);
 
 }

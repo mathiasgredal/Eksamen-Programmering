@@ -1,37 +1,35 @@
 #include "../../include/Entity.h"
 #include "../../include/Collision/Shape.h"
 #include "../../include/Collision/Circle.h"
+#include "../../include/Collision/Manifold.h"
 
 Circle::Circle(float _radius)
 {
     radius = _radius;
 }
 
-void Circle::Draw(NVGcontext *ctx, const Entity &entity) const
+void Circle::Draw(NVGcontext *ctx, std::shared_ptr<Entity> entity) const
 {
     nvgBeginPath(ctx);
-    nvgCircle(ctx, entity.position.x, entity.position.y, radius);
+    nvgCircle(ctx, entity->position.x, entity->position.y, radius);
     nvgFillColor(ctx, color);
     nvgFill(ctx);
 }
 
-bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Shape *shapeB) const
+Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape *shapeB) const
 {
     return shapeB->IsColliding(entityA, entityB, this);
 }
 
-bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Circle *shapeB) const
+Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Circle *shapeB) const
 {
-    auto manifold = Util::CreateManifoldCircleVsCircle(entityA, this, entityB, shapeB);
-
-    if(manifold.isColliding)
-        std::cout << "WE HAVE A COLLISION" << std::endl;
-
-    return manifold.isColliding;
+    return Util::CreateManifoldCircleVsCircle(entityA, this, entityB, shapeB);
 }
 
-bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Rectangle *shapeB) const
+Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rectangle *shapeB) const
 {
-//    std::cout << "Circle vs Rect" << std::endl;
-    return true;
+    // std::cout << "Circle vs Rect" << std::endl;
+    Manifold manifold = Manifold();
+    manifold.isColliding = false;
+    return manifold;
 }

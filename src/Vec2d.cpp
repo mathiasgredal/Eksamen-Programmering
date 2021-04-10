@@ -34,6 +34,13 @@ Vec2d& Vec2d::operator+=(const Vec2d& a)
     return *this;
 }
 
+Vec2d &Vec2d::operator-=(const Vec2d &a)
+{
+    x -= a.x;
+    y -= a.y;
+    return *this;
+}
+
 Vec2d Vec2d::operator+(const Vec2d &a) const
 {
     return Vec2d(x + a.x, y + a.y);
@@ -42,4 +49,9 @@ Vec2d Vec2d::operator+(const Vec2d &a) const
 Vec2d Vec2d::operator-(const Vec2d &a) const
 {
     return Vec2d(x - a.x, y - a.y);
+}
+
+float Vec2d::Dot(const Vec2d &a, const Vec2d &b)
+{
+    return a.x * b.x + a.y * b.y;
 }
