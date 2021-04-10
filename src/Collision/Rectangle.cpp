@@ -23,13 +23,13 @@ bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const 
 
 bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const Circle *shapeB) const
 {
-    std::cout << "Rect vs Circle" << std::endl;
+//    std::cout << "Rect vs Circle" << std::endl;
     return true;
 }
 
 bool Rectangle::IsColliding(const Entity &entityA, const Entity &entityB, const Rectangle *shapeB) const
 {
-    std::cout << "Rect vs Rect" << std::endl;
+//    std::cout << "Rect vs Rect" << std::endl;
     return true;
 }
 

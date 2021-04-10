@@ -12,12 +12,17 @@ Vec2d::Vec2d(float _x, float _y)
     y = _y;
 }
 
-Vec2d Vec2d::operator*(float a)
+float Vec2d::Length() const
+{
+    return std::sqrt(x*x+y*y);
+}
+
+Vec2d Vec2d::operator*(float a) const
 {
     return Vec2d(x*a, y*a);
 }
 
-Vec2d Vec2d::operator/(float a)
+Vec2d Vec2d::operator/(float a) const
 {
     return Vec2d(x/a, y/a);
 }
@@ -27,4 +32,14 @@ Vec2d& Vec2d::operator+=(const Vec2d& a)
     x += a.x;
     y += a.y;
     return *this;
+}
+
+Vec2d Vec2d::operator+(const Vec2d &a) const
+{
+    return Vec2d(x + a.x, y + a.y);
+}
+
+Vec2d Vec2d::operator-(const Vec2d &a) const
+{
+    return Vec2d(x - a.x, y - a.y);
 }

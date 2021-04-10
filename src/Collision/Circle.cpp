@@ -22,12 +22,16 @@ bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Sha
 
 bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Circle *shapeB) const
 {
-    std::cout << "Circle vs Circle" << std::endl;
-    return true;
+    auto manifold = Util::CreateManifoldCircleVsCircle(entityA, this, entityB, shapeB);
+
+    if(manifold.isColliding)
+        std::cout << "WE HAVE A COLLISION" << std::endl;
+
+    return manifold.isColliding;
 }
 
 bool Circle::IsColliding(const Entity &entityA, const Entity &entityB, const Rectangle *shapeB) const
 {
-    std::cout << "Circle vs Rect" << std::endl;
+//    std::cout << "Circle vs Rect" << std::endl;
     return true;
 }

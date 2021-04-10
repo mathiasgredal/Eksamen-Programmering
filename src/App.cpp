@@ -88,8 +88,10 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 	//create level
     m_level = Scene();
     m_level.Add(Entity(Vec2d(100, 50), 0, std::make_shared<Circle>(10)));
-    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50)));
-    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
+//    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50), SimType::Static));
+//    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
+    m_level.Add(Entity(Vec2d(200, 700), 0, std::make_shared<Circle>(200), SimType::Static));
+
 
 }
 
@@ -159,21 +161,21 @@ auto App::drawVG() -> void
         entity.shape->Draw(m_ctx, entity);
     }
 
-    nvgBeginPath(m_ctx);
-    nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
-    nvgStrokeWidth(m_ctx, 15);
-    nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
-    nvgLineJoin(m_ctx, NVG_BEVEL);
-    nvgStroke(m_ctx);
+//    nvgBeginPath(m_ctx);
+//    nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
+//    nvgStrokeWidth(m_ctx, 15);
+//    nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
+//    nvgLineJoin(m_ctx, NVG_BEVEL);
+//    nvgStroke(m_ctx);
 
     nvgFontSize(m_ctx, 36);
     nvgFontFace(m_ctx, "regular");
     nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
 
-    nvgFontSize(m_ctx, 36*4);
-    nvgFontFace(m_ctx, "emoji");
-    nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
-    nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
+//    nvgFontSize(m_ctx, 36*4);
+//    nvgFontFace(m_ctx, "emoji");
+//    nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
+//    nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
 }
 
 

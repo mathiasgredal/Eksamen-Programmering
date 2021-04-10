@@ -25,7 +25,6 @@ void Scene::Step(float dT)
     std::vector<Manifold> collisions = {};
     for(auto& entity : entities) {
         // Check collisions
-        std::cout << "Collisions" << std::endl;
         for(const auto& other : entities) {
             if(&entity == &other) continue;
 
@@ -37,10 +36,13 @@ void Scene::Step(float dT)
         }
 
         // Resolve gravity
-        entity.force += gravity_coeff * entity.mass;
-        entity.velocity += entity.force / entity.mass * dT;
-        entity.position += entity.velocity * dT;
-        entity.force = Vec2d();
+        if(entity.type == SimType::Dynamic) {
+            entity.force += gravity_coeff * entity.mass;
+            entity.velocity += entity.force / entity.mass * dT;
+            entity.position += entity.velocity * dT;
+            entity.force = Vec2d();
+        }
+
     }
 }
 
