@@ -8,8 +8,13 @@ public:
 
 	float x, y;
 
-    Vec2d operator*(float a);
-    Vec2d operator/(float a);
+    float Length() const;
+
+    Vec2d operator*(float a) const;
+    Vec2d operator/(float a) const;
 
     Vec2d &operator+=(const Vec2d& a);
+
+    Vec2d operator+(const Vec2d& a) const;
+    Vec2d operator-(const Vec2d& a) const;
 };

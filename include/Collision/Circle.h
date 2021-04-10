@@ -2,6 +2,7 @@
 
 #include "../Vec2d.h"
 #include "Shape.h"
+#include "CollisionHelper.h"
 
 class Circle : public Shape {
 public:
