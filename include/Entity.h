@@ -14,6 +14,8 @@ public:
            std::shared_ptr<Shape> _shape,
            float _mass = 1,
            float _restitution = 1,
+           float _staticFriction = 1,
+           float _dynamicFriction = 1,
            SimType _type = SimType::Dynamic);
 
     Vec2d position;
@@ -25,6 +27,8 @@ public:
     Vec2d velocity;
     float mass;
     float restitution;
+    float staticFriction;
+    float dynamicFriction;
     SimType type;
 
     Manifold IsColliding(std::shared_ptr<Entity> other);

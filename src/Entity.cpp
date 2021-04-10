@@ -1,11 +1,13 @@
 #include "../include/Entity.h"
 
-Entity::Entity(Vec2d _pos, float _rot, std::shared_ptr<Shape> _shape, float _mass, float _restitution, SimType _type)
+Entity::Entity(Vec2d _pos, float _rot, std::shared_ptr<Shape> _shape, float _mass, float _restitution, float _staticFriction, float _dynamicFriction, SimType _type)
 {
     position = _pos;
     rotation = _rot;
     mass = _mass;
     restitution = _restitution;
+    staticFriction = _staticFriction;
+    dynamicFriction = _dynamicFriction;
     shape = _shape;
     type = _type;
 }
