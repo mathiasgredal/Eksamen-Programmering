@@ -9,6 +9,7 @@ public:
 	float x, y;
 
     float Length() const;
+    Vec2d Normalized() const;
 
     Vec2d operator*(float a) const;
     Vec2d operator/(float a) const;

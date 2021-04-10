@@ -48,6 +48,41 @@ void Manifold::ResolveImpulse()
     // Use impulse to modify speed
     entityA->velocity -= impulse * inverseMassA;
     entityB->velocity += impulse * inverseMassB;
+
+    // Calculate friction
+    // Since we have updated the velocoties, we need to redo the earlier calculations
+    velocityA = staticA? Vec2d() : entityA->velocity;
+    velocityB = staticB? Vec2d() : entityB->velocity;
+    relativeVelocity = velocityB - velocityA;
+    contactSpeed = Vec2d::Dot(relativeVelocity, normal);
+
+    // We create a tangent vector to the incident face, which descripes the friction force direction
+    Vec2d tangent = (relativeVelocity - normal * contactSpeed ).Normalized();
+
+    // By projection the relative velocity onto the tangent we get the "sliding" speed or friction speed
+    float frictionSpeed = Vec2d::Dot(relativeVelocity, tangent);
+
+    float staticFriction = sqrt(entityA->staticFriction * entityB->staticFriction);
+    float dynamicFriction = sqrt(entityA->dynamicFriction * entityB->dynamicFriction);
+
+    // Calculate scalar for friction impulse
+    float fj = -frictionSpeed / (inverseMassA + inverseMassB);
+
+    if(abs(fj) < 0.001)
+        return;
+
+    Vec2d friction;
+    if(abs(fj) < j * staticFriction)
+        friction = tangent * fj; // If the friction is small, then static friciton applies
+    else
+        friction = tangent * -j * dynamicFriction; // otherwise dynamic friciton
+
+    // Apply friction impulses
+    if(entityA->type == SimType::Dynamic)
+        entityA->velocity += friction * inverseMassA;
+    if(entityB->type == SimType::Dynamic)
+        entityB->velocity -= friction * inverseMassB;
+
 }
 
 void Manifold::ResolvePosition()

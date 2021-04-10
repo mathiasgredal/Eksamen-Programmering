@@ -93,8 +93,8 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
 //    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50), SimType::Static));
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
-    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 1, 10, SimType::Static));
-    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 1, 1, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 1, 0.1, 0, 0, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 1, 0.1, 10, 10, SimType::Static));
 
 
 }
@@ -127,7 +127,7 @@ auto App::run() -> void
             if(mouseState == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(m_window, &x, &y);
-                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(15), 5, 2));
+                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(15), 10, 1, 1, 0.1));
             }
 
         }
