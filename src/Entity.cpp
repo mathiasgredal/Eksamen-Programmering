@@ -1,11 +1,12 @@
 #include "../include/Entity.h"
 
-Entity::Entity(Vec2d _pos, float _rot, std::shared_ptr<Shape> _shape, std::string _name, SimType _type)
+Entity::Entity(Vec2d _pos, float _rot, std::shared_ptr<Shape> _shape, float _mass, float _restitution, SimType _type)
 {
     position = _pos;
     rotation = _rot;
+    mass = _mass;
+    restitution = _restitution;
     shape = _shape;
-    name = _name;
     type = _type;
 }
 

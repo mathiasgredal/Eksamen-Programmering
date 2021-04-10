@@ -28,30 +28,27 @@ void Manifold::Resolve()
     // (see: https://www.webmatematik.dk/lektioner/sarligt-for-htx/vektorer-i-planen/projektion-fra-enhedsvektor)
     float contactSpeed = Vec2d::Dot(relativeVelocity, normal);
 
+    // We should precalculate the inverse mass in the constructor
+    float inverseMassA = staticA? 1.0 : 1/entityA->mass;
+    float inverseMassB = staticB? 1.0 : 1/entityB->mass;
+
     // Negative velocity means the entities are moving away from each other
     // In that case there is no need for collision resolution
     if(contactSpeed < 0)
         return;
 
     // Calculate a combined restitution or bounciness
-    float e = 1;
+    float e = entityA->restitution*entityB->restitution;
 
     // Create an impulse scalar(still need to account for mass and moment of inertia)
-    float j = -(1+e)*contactSpeed/(2);
-
-    std::cout << "NAMES: A=" << entityA->name << ", B=" << entityB->name << std::endl;
-    std::cout << "VELOCITY A: " << velocityA.x << ", " << velocityA.y << std::endl;
-    std::cout << "VELOCITY B: " << velocityB.x << ", " << velocityB.y << std::endl;
-    std::cout << "RELATIVE VELOCITY: " << relativeVelocity.x << ", " << relativeVelocity.y << std::endl;
-    std::cout << "CONTACT SPEED: " << contactSpeed << std::endl;
-    std::cout << "IMPULSE SCALAR: " << j << std::endl;
+    float j = -(1+e)*contactSpeed/(inverseMassA + inverseMassB);
 
     Vec2d impulse = normal * j;
 
     // Use impulse to modify speed
     // TODO: account for mass
-    entityA->velocity -= impulse;
-    entityB->velocity += impulse;
+    entityA->velocity -= impulse * inverseMassA;
+    entityB->velocity += impulse * inverseMassB;
 
     return;
 }
