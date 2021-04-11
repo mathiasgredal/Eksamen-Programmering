@@ -19,6 +19,9 @@ float Vec2d::Length() const
 
 Vec2d Vec2d::Normalized() const
 {
+    if(Length() == 0)
+        return Vec2d();
+
     return *this / Length();
 }
 

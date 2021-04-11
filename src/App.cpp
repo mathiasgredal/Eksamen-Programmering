@@ -87,14 +87,16 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 	
 	//create level
     m_level = Scene();
-    m_level.Add(std::make_shared<Entity>(Vec2d(400, 50), 0, std::make_shared<Circle>(10)));
-    m_level.Add(std::make_shared<Entity>(Vec2d(425, 50), 0, std::make_shared<Circle>(10)));
-    m_level.Add(std::make_shared<Entity>(Vec2d(445, 50), 0, std::make_shared<Circle>(10)));
+//    m_level.Add(std::make_shared<Entity>(Vec2d(400, 50), 0, std::make_shared<Circle>(10)));
+//    m_level.Add(std::make_shared<Entity>(Vec2d(425, 50), 0, std::make_shared<Circle>(10)));
+//    m_level.Add(std::make_shared<Entity>(Vec2d(445, 50), 0, std::make_shared<Circle>(10)));
 
 //    m_level.Add(Entity(Vec2d(300, 200), 0, std::make_shared<Circle>(50), SimType::Static));
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
-    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 1, 0.1, 0, 0, SimType::Static));
-    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 1, 0.1, 10, 10, SimType::Static));
+//    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 100000, 0.7, 0, 0, SimType::Static));
+//    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 100, 1, 0, 0, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(0.2, 500), 100, 0.9, 0.1, 0.1, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(-0.2, 800), 100, 0.9, 0.1, 0.1, SimType::Static));
 
 
 }
@@ -109,7 +111,8 @@ App::~App()
     glfwTerminate();
 }
 
-int mouseState = GLFW_RELEASE;
+int mouseStateLeft = GLFW_RELEASE;
+int mouseStateRight = GLFW_RELEASE;
 
 ///
 /// \brief App::run Main loop for the game
@@ -121,20 +124,27 @@ auto App::run() -> void
         glfwPollEvents();
 
 
-        if(glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) !=  mouseState)
+        if(glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) !=  mouseStateLeft)
         {
-            mouseState = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT);
-            if(mouseState == GLFW_PRESS) {
+            mouseStateLeft = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT);
+            if(mouseStateLeft == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(m_window, &x, &y);
-                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(15), 10, 1, 1, 0.1));
+                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(15), 10, 0.9, 1, 0.1));
             }
 
         }
 
+        if(glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) !=  mouseStateRight)
+        {
+            mouseStateRight = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT);
+            if(mouseStateRight == GLFW_PRESS) {
+                double x, y;
+                glfwGetCursorPos(m_window, &x, &y);
+                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(80), 1000, 0.9, 1, 0.1));
+            }
 
-        // Run physics
-        m_level.Step(ImGui::GetIO().DeltaTime);
+        }
 
         // Clear screen
         bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
@@ -156,6 +166,12 @@ auto App::run() -> void
         memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));
 
         ImGui::NewFrame();
+
+
+        // Run physics
+        m_level.Step(ImGui::GetIO().DeltaTime);
+
+
         drawGUI();
         imguiEndFrame();
 
@@ -188,9 +204,9 @@ auto App::drawVG() -> void
 //    nvgLineJoin(m_ctx, NVG_BEVEL);
 //    nvgStroke(m_ctx);
 
-    nvgFontSize(m_ctx, 36);
-    nvgFontFace(m_ctx, "regular");
-    nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
+//    nvgFontSize(m_ctx, 36);
+//    nvgFontFace(m_ctx, "regular");
+//    nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
 
 //    nvgFontSize(m_ctx, 36*4);
 //    nvgFontFace(m_ctx, "emoji");

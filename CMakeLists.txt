@@ -78,6 +78,7 @@ add_executable(demo "src/main.cpp"
     "src/Collision/Circle.cpp" "include/Collision/Circle.h"
     "src/Collision/Rectangle.cpp" "include/Collision/Rectangle.h"
     "src/Collision/CollisionHelper.cpp" "include/Collision/CollisionHelper.h"
+    "src/Collision/Line.cpp" "include/Collision/Line.h"
 )
 target_link_libraries(demo glfw bgfx imgui nanovg fmt cxxopts fonts)
 if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
