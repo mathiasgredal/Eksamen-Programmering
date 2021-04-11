@@ -1,5 +1,6 @@
 #include "../../include/Collision/CollisionHelper.h"
 #include "../../include/Collision/Circle.h"
+#include "../../include/Collision/Line.h"
 #include "../../include/Entity.h"
 
 Manifold Util::CreateManifoldCircleVsCircle(std::shared_ptr<Entity> entityA, const Circle *circleA, std::shared_ptr<Entity> entityB, const Circle *circleB)
@@ -22,5 +23,31 @@ Manifold Util::CreateManifoldCircleVsCircle(std::shared_ptr<Entity> entityA, con
     manifold.collisionPoint = entityA->position + manifold.normal*circleA->radius;
     manifold.entityA = entityA;
     manifold.entityB = entityB;
+    return manifold;
+}
+
+Manifold Util::CreateManifoldCircleVsLine(std::shared_ptr<Entity> entityA, const Circle *circleA, std::shared_ptr<Entity> entityB, const Line *lineB)
+{
+    Manifold manifold = Manifold();
+
+    // Create normal vector
+    const Vec2d dir = Vec2d(0, lineB->b) - Vec2d(1, lineB->a + lineB->b);
+    manifold.normal = Vec2d(-dir.y, dir.x).Normalized() * -1;
+
+    // Create vector between circle and line and project on normal vector to find distance
+    const Vec2d circToLine = entityA->position - Vec2d(0, lineB->b);
+    float distance = Vec2d::Dot(manifold.normal, circToLine);
+
+    if(distance + circleA->radius >= 0) {
+        // We have a collision
+        manifold.isColliding = true;
+        manifold.depth = distance + circleA->radius;
+        manifold.collisionPoint = entityA->position - manifold.normal * manifold.depth;
+        manifold.entityA = entityB;
+        manifold.entityB = entityA;
+    } else {
+        manifold.isColliding = false;
+    }
+
     return manifold;
 }

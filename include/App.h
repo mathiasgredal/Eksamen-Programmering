@@ -34,6 +34,7 @@ CMRC_DECLARE(fonts);
 #include "Scene.h"
 #include "Collision/Circle.h"
 #include "Collision/Rectangle.h"
+#include "Collision/Line.h"
 
 
 class App

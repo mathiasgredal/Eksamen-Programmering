@@ -20,7 +20,7 @@ void Rectangle::Draw(NVGcontext *ctx, std::shared_ptr<Entity> entity) const
 
 Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape *shapeB) const
 {
-    return shapeB->IsColliding(entityA, entityB, this);
+    return shapeB->IsColliding(entityB, entityA, this);
 }
 
 Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Circle *shapeB) const
@@ -34,6 +34,13 @@ Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr
 Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rectangle *shapeB) const
 {
     // std::cout << "Rect vs Rect" << std::endl;
+    Manifold manifold = Manifold();
+    manifold.isColliding = false;
+    return manifold;
+}
+
+Manifold Rectangle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Line *shapeB) const
+{
     Manifold manifold = Manifold();
     manifold.isColliding = false;
     return manifold;

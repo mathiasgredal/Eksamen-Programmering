@@ -8,7 +8,6 @@ Manifold::Manifold()
 
 void Manifold::ResolveImpulse()
 {
-    std::cout << "Resolving collision" << std::endl;
     const bool staticA = entityA->type == SimType::Static;
     const bool staticB = entityB->type == SimType::Static;
 
@@ -29,8 +28,8 @@ void Manifold::ResolveImpulse()
     float contactSpeed = Vec2d::Dot(relativeVelocity, normal);
 
     // We should precalculate the inverse mass in the constructor
-    float inverseMassA = staticA? 1.0 : 1/entityA->mass;
-    float inverseMassB = staticB? 1.0 : 1/entityB->mass;
+    float inverseMassA = 1/entityA->mass;
+    float inverseMassB = 1/entityB->mass;
 
     // Negative velocity means the entities are moving away from each other
     // In that case there is no need for collision resolution
@@ -78,9 +77,9 @@ void Manifold::ResolveImpulse()
         friction = tangent * -j * dynamicFriction; // otherwise dynamic friciton
 
     // Apply friction impulses
-    if(entityA->type == SimType::Dynamic)
+    if(!staticA)
         entityA->velocity += friction * inverseMassA;
-    if(entityB->type == SimType::Dynamic)
+    if(!staticB)
         entityB->velocity -= friction * inverseMassB;
 
 }
