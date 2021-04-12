@@ -98,10 +98,26 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
 //    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 100000, 0.7, 0, 0, SimType::Static));
 //    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 100, 1, 0, 0, SimType::Static));
-    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(0.2, 500), 100, 0.9, 100.1, 100.1, SimType::Static));
-    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(-0.2, 800), 100, 0.9, 0.1, 0.1, SimType::Static));
 
+    // Create a line
+    auto line = std::make_shared<Line>(0.2, 500);
+    auto entity = std::make_shared<Entity>(Vec2d(550, 700), line);
 
+    entity->rotation = 0;
+    entity->mass = 100;
+    entity->restitution = 0.9;
+    entity->dynamicFriction = 0.6;
+    entity->staticFriction = 0.4;
+    entity->type = SimType::Static;
+
+    // Clone the previous line
+    auto line2 = std::make_shared<Line>(-0.2, 800);
+    auto entity2 = std::make_shared<Entity>(*entity);
+    entity2->shape = line2;
+
+    // Add the lines to the level
+    m_level.Add(entity);
+    m_level.Add(entity2);
 }
 
 App::~App()
@@ -252,10 +268,35 @@ void App::onMousePress(GLFWwindow *window, int button, int state, int modifiers)
     glfwGetCursorPos(app->m_window, &x, &y);
     auto mousePos = Vec2d(x,y)*app->m_scale;
 
+    if(button == GLFW_MOUSE_BUTTON_LEFT && state == GLFW_PRESS) {
+        auto circle = std::make_shared<Circle>(15); // Make a circle with radius 15
+        auto entity = std::make_shared<Entity>(mousePos, circle); // Create an entity at the mouse position with the circle shape
 
-    if(button == GLFW_MOUSE_BUTTON_LEFT && state == GLFW_PRESS)
-        app->m_level.Add(std::make_shared<Entity>(mousePos, 0, std::make_shared<Circle>(15), 10, 0.9, 1, 0.1));
+        // Set properties for the entity
+        entity->rotation = 0;
+        entity->mass = 10;
+        entity->restitution = 0.9;
+        entity->dynamicFriction = 0.1;
+        entity->staticFriction = 1;
+        entity->type = SimType::Dynamic; // Dynamic means the object can move
 
-    if(button == GLFW_MOUSE_BUTTON_RIGHT  && state == GLFW_PRESS)
-        app->m_level.Add(std::make_shared<Entity>(mousePos, 0, std::make_shared<Circle>(80), 1000, 0.9, 100, 100));
+        // Spawn the entity by adding it to the level
+        app->m_level.Add(entity);
+    }
+
+    if(button == GLFW_MOUSE_BUTTON_RIGHT  && state == GLFW_PRESS) {
+        auto circle = std::make_shared<Circle>(80); // Make a circle with radius 80
+        auto entity = std::make_shared<Entity>(mousePos, circle); // Create an entity at the mouse position with the circle shape
+
+        // Set properties for the entity
+        entity->rotation = 0;
+        entity->mass = 1000;
+        entity->restitution = 0.9;
+        entity->dynamicFriction = 0.1;
+        entity->staticFriction = 1;
+        entity->type = SimType::Dynamic; // Dynamic means the object can move
+
+        // Spawn the entity by adding it to the level
+        app->m_level.Add(entity);
+    }
 }
