@@ -277,7 +277,7 @@ void App::onMousePress(GLFWwindow *window, int button, int state, int modifiers)
         entity->mass = 10;
         entity->restitution = 0.9;
         entity->dynamicFriction = 0.1;
-        entity->staticFriction = 1;
+        entity->staticFriction = 0.1;
         entity->type = SimType::Dynamic; // Dynamic means the object can move
 
         // Spawn the entity by adding it to the level
