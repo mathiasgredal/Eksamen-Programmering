@@ -33,6 +33,9 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     glfwSetWindowSizeCallback(m_window, App::glfw_windowResizeCallback);
     glfwSetWindowUserPointer(m_window, (void *)this);
 
+    // Handle mouse events
+    glfwSetMouseButtonCallback(m_window, App::onMousePress);
+
     // Calling renderFrame before init sets main thread to be render thread
     // See: https://bkaradzic.github.io/bgfx/internals.html
     bgfx::renderFrame();
@@ -95,7 +98,7 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 //    m_level.Add(Entity(Vec2d(600, 300), 0, std::make_shared<Rectangle>(20, 60)));
 //    m_level.Add(std::make_shared<Entity>(Vec2d(300, 700), 1, std::make_shared<Circle>(200), 100000, 0.7, 0, 0, SimType::Static));
 //    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Circle>(200), 100, 1, 0, 0, SimType::Static));
-    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(0.2, 500), 100, 0.9, 0.1, 0.1, SimType::Static));
+    m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(0.2, 500), 100, 0.9, 100.1, 100.1, SimType::Static));
     m_level.Add(std::make_shared<Entity>(Vec2d(550, 700), 0, std::make_shared<Line>(-0.2, 800), 100, 0.9, 0.1, 0.1, SimType::Static));
 
 
@@ -111,9 +114,6 @@ App::~App()
     glfwTerminate();
 }
 
-int mouseStateLeft = GLFW_RELEASE;
-int mouseStateRight = GLFW_RELEASE;
-
 ///
 /// \brief App::run Main loop for the game
 ///
@@ -122,29 +122,6 @@ auto App::run() -> void
     while (!glfwWindowShouldClose(m_window)) {
         auto t_start = Clock::now();
         glfwPollEvents();
-
-
-        if(glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) !=  mouseStateLeft)
-        {
-            mouseStateLeft = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT);
-            if(mouseStateLeft == GLFW_PRESS) {
-                double x, y;
-                glfwGetCursorPos(m_window, &x, &y);
-                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(15), 10, 0.9, 1, 0.1));
-            }
-
-        }
-
-        if(glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) !=  mouseStateRight)
-        {
-            mouseStateRight = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT);
-            if(mouseStateRight == GLFW_PRESS) {
-                double x, y;
-                glfwGetCursorPos(m_window, &x, &y);
-                m_level.Add(std::make_shared<Entity>(Vec2d(x*m_scale, y*m_scale), 0, std::make_shared<Circle>(80), 1000, 0.9, 1, 0.1));
-            }
-
-        }
 
         // Clear screen
         bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
@@ -224,6 +201,7 @@ auto App::drawGUI() -> void
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Stats");
     ImGui::Text(fmt::format("Backend: {}", bgfx::getRendererName( bgfx::getRendererType())).c_str());
+    ImGui::Text(fmt::format("Entities: {}", (int)m_level.getEntities().size()).c_str());
     ImGui::Text(fmt::format("FPS: {:.1f}", ImGui::GetIO().Framerate).c_str());
 
     float cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(t_end-t_begin).count()/1000000.f;
@@ -264,4 +242,20 @@ auto App::getWindowWidth() -> int
     int width;
     glfwGetFramebufferSize(m_window, &width, nullptr);
     return width;
+}
+
+void App::onMousePress(GLFWwindow *window, int button, int state, int modifiers)
+{
+    auto app = (App*)glfwGetWindowUserPointer(window);
+
+    double x, y;
+    glfwGetCursorPos(app->m_window, &x, &y);
+    auto mousePos = Vec2d(x,y)*app->m_scale;
+
+
+    if(button == GLFW_MOUSE_BUTTON_LEFT && state == GLFW_PRESS)
+        app->m_level.Add(std::make_shared<Entity>(mousePos, 0, std::make_shared<Circle>(15), 10, 0.9, 1, 0.1));
+
+    if(button == GLFW_MOUSE_BUTTON_RIGHT  && state == GLFW_PRESS)
+        app->m_level.Add(std::make_shared<Entity>(mousePos, 0, std::make_shared<Circle>(80), 1000, 0.9, 100, 100));
 }

@@ -55,6 +55,9 @@ private:
     auto getWindowHeight() -> int;
     auto getWindowWidth() -> int;
 
+    // Events
+    static auto onMousePress(GLFWwindow* window, int button, int state, int modifiers) -> void;
+
     GLFWwindow* m_window;
     const std::string project_name = "Programmering eksamen";
     int m_windowHeight = 600;
@@ -63,10 +66,12 @@ private:
 
     uint32_t m_frameNumber = 0;
     bool vsync = true;
+
     const bgfx::ViewId m_viewId;
     NVGcontext* m_ctx;
     Scene m_level;
 
+    // CPU timing
     typedef std::chrono::high_resolution_clock Clock;
     std::chrono::time_point<std::chrono::high_resolution_clock> t_begin;
     std::chrono::time_point<std::chrono::high_resolution_clock> t_end;    

@@ -1,22 +1,19 @@
-#include "../../include/Collision/Manifold.h"
-#include "../../include/Entity.h"
+#include "../include/Resolver.h"
+#include "../include/Collision/Manifold.h"
+#include "../include/Entity.h"
 
-Manifold::Manifold()
+
+void Util::ResolveImpulse(Manifold &m)
 {
-
-}
-
-void Manifold::ResolveImpulse()
-{
-    const bool staticA = entityA->type == SimType::Static;
-    const bool staticB = entityB->type == SimType::Static;
+    const bool staticA = m.entityA->type == SimType::Static;
+    const bool staticB = m.entityB->type == SimType::Static;
 
     if(staticA && staticB) // Both entities are static, no need for collision resolution
         return;
 
     // We zero out velocity if static
-    Vec2d velocityA = staticA? Vec2d() : entityA->velocity;
-    Vec2d velocityB = staticB? Vec2d() : entityB->velocity;
+    Vec2d velocityA = staticA? Vec2d() : m.entityA->velocity;
+    Vec2d velocityB = staticB? Vec2d() : m.entityB->velocity;
 
     // TODO: Relative velocity should take angulare velocity into account using distance from contact point
     Vec2d relativeVelocity = velocityB - velocityA;
@@ -25,11 +22,11 @@ void Manifold::ResolveImpulse()
     // projecting the relative velocity onto the normal vector.
     // Since the normal vector is normalized, we just use the dot product
     // (see: https://www.webmatematik.dk/lektioner/sarligt-for-htx/vektorer-i-planen/projektion-fra-enhedsvektor)
-    float contactSpeed = Vec2d::Dot(relativeVelocity, normal);
+    float contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
 
     // We should precalculate the inverse mass in the constructor
-    float inverseMassA = 1/entityA->mass;
-    float inverseMassB = 1/entityB->mass;
+    float inverseMassA = 1/m.entityA->mass;
+    float inverseMassB = 1/m.entityB->mass;
 
     // Negative velocity means the entities are moving away from each other
     // In that case there is no need for collision resolution
@@ -37,32 +34,32 @@ void Manifold::ResolveImpulse()
         return;
 
     // Calculate a combined restitution or bounciness
-    float e = entityA->restitution*entityB->restitution;
+    float e = m.entityA->restitution*m.entityB->restitution;
 
     // Create an impulse scalar
     float j = -(1+e)*contactSpeed/(inverseMassA + inverseMassB);
 
-    Vec2d impulse = normal * j;
+    Vec2d impulse = m.normal * j;
 
     // Use impulse to modify speed
-    entityA->velocity -= impulse * inverseMassA;
-    entityB->velocity += impulse * inverseMassB;
+    m.entityA->velocity -= impulse * inverseMassA;
+    m.entityB->velocity += impulse * inverseMassB;
 
     // Calculate friction
     // Since we have updated the velocoties, we need to redo the earlier calculations
-    velocityA = staticA? Vec2d() : entityA->velocity;
-    velocityB = staticB? Vec2d() : entityB->velocity;
+    velocityA = staticA? Vec2d() : m.entityA->velocity;
+    velocityB = staticB? Vec2d() : m.entityB->velocity;
     relativeVelocity = velocityB - velocityA;
-    contactSpeed = Vec2d::Dot(relativeVelocity, normal);
+    contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
 
     // We create a tangent vector to the incident face, which descripes the friction force direction
-    Vec2d tangent = (relativeVelocity - normal * contactSpeed ).Normalized();
+    Vec2d tangent = (relativeVelocity - m.normal * contactSpeed ).Normalized();
 
     // By projection the relative velocity onto the tangent we get the "sliding" speed or friction speed
     float frictionSpeed = Vec2d::Dot(relativeVelocity, tangent);
 
-    float staticFriction = sqrt(entityA->staticFriction * entityB->staticFriction);
-    float dynamicFriction = sqrt(entityA->dynamicFriction * entityB->dynamicFriction);
+    float staticFriction = sqrt(m.entityA->staticFriction * m.entityB->staticFriction);
+    float dynamicFriction = sqrt(m.entityA->dynamicFriction * m.entityB->dynamicFriction);
 
     // Calculate scalar for friction impulse
     float fj = -frictionSpeed / (inverseMassA + inverseMassB);
@@ -78,20 +75,19 @@ void Manifold::ResolveImpulse()
 
     // Apply friction impulses
     if(!staticA)
-        entityA->velocity += friction * inverseMassA;
+        m.entityA->velocity += friction * inverseMassA;
     if(!staticB)
-        entityB->velocity -= friction * inverseMassB;
-
+        m.entityB->velocity -= friction * inverseMassB;
 }
 
-void Manifold::ResolvePosition()
+void Util::ResolvePosition(Manifold &m)
 {
     // Position resolution is about reducing the penetration depth a certain percantage
     // to prevent objects from sinking
     float maxDepth= 0.05f;
     float correctionPercentage = 0.4f;
-    float correctionScalar = (std::max(depth - maxDepth, 0.0f)*entityA->mass*entityB->mass/(entityA->mass + entityB->mass));
-    Vec2d correction = normal * correctionScalar * correctionPercentage;
-    entityA->position += entityA->type == SimType::Dynamic? correction / entityA->mass : Vec2d();
-    entityB->position -= entityB->type == SimType::Dynamic? correction / entityB->mass : Vec2d();
+    float correctionScalar = (std::max(m.depth - maxDepth, 0.0f)*m.entityA->mass*m.entityB->mass/(m.entityA->mass + m.entityB->mass));
+    Vec2d correction = m.normal * correctionScalar * correctionPercentage;
+    m.entityA->position += m.entityA->type == SimType::Dynamic? correction / m.entityA->mass : Vec2d();
+    m.entityB->position -= m.entityB->type == SimType::Dynamic? correction / m.entityB->mass : Vec2d();
 }

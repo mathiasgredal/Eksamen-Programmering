@@ -14,7 +14,7 @@ Vec2d::Vec2d(float _x, float _y)
 
 float Vec2d::Length() const
 {
-    return std::sqrt(x*x+y*y);
+    return sqrt(x*x+y*y);
 }
 
 Vec2d Vec2d::Normalized() const

@@ -73,12 +73,12 @@ add_executable(demo "src/main.cpp"
     "src/Scene.cpp" "include/Scene.h"
     "src/Vec2d.cpp" "include/Vec2d.h"
     "src/Entity.cpp" "include/Entity.h"
-    "include/Collision/Shape.h"
-    "src/Collision/Manifold.cpp" "include/Collision/Manifold.h"
+    "include/Collision/Shape.h" "include/Collision/Manifold.h"
     "src/Collision/Circle.cpp" "include/Collision/Circle.h"
     "src/Collision/Rectangle.cpp" "include/Collision/Rectangle.h"
     "src/Collision/CollisionHelper.cpp" "include/Collision/CollisionHelper.h"
     "src/Collision/Line.cpp" "include/Collision/Line.h"
+    "src/Resolver.cpp" "include/Resolver.h"
 )
 target_link_libraries(demo glfw bgfx imgui nanovg fmt cxxopts fonts)
 if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")

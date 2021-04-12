@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "Entity.h"
+#include "Resolver.h"
 
 class Scene 
 {

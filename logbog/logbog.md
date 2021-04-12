@@ -9,3 +9,7 @@ I dag fremlagde vi ville arbejde med. Resten af timen blev brugt til vidensindsa
 #### Logbog 2021-04-9
 
 I dag har vi lavet alle klasserne klar til implementering. Vi har også lavet et klassediagram, som vi kan støtte det op af. Filstrukteren er sat op med trelagsstruktur og er klar til at arbejdes på... 
+
+#### Logbog 2021-04-12
+
+I dag har vi diskuteret hvad der er blevet lavet over weekenden, samt hvad vi skal arbejde videre med og hvad vi har brug for hjælp med. Vi har desuden testet det kode, som er blevet skrevet, ved manuelle tests hvor både ydeevne og grænsetilfælde(hvor mange objekter kan programmet håndtere osv.). Der blev fundet grafiske fejl ved mange elementer. 
