@@ -7,99 +7,81 @@ void Util::ResolveImpulse(Manifold &m)
 {
     // Formulas can be found here: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf
 
-//    const bool staticA = m.entityA->type == SimType::Static;
-//    const bool staticB = m.entityB->type == SimType::Static;
-
-//    if(staticA && staticB) // Both entities are static, no need for collision resolution
-//        return;
-
-//    // We zero out velocity if static
-//    Vec2d velocityA = staticA? Vec2d() : m.entityA->velocity;
-//    Vec2d velocityB = staticB? Vec2d() : m.entityB->velocity;
-
-//    // Calculate radius from contactpoint to center
-//    Vec2d radiusA = m.collisionPoint - m.entityA->position;
-//    Vec2d radiusB = m.collisionPoint - m.entityB->position;
-
-//    // Equation 7 from the linked pdf
-//    Vec2d relativeVelocity = velocityB/* + radiusB.Orthogonal() * m.entityB->angularVelocity */-
-//                             velocityA /*+ radiusA.Orthogonal() * m.entityA->angularVelocity*/;
-
-//    // We can find the speed of the entities relative to the contact point by
-//    // projecting the relative velocity onto the normal vector.
-//    // Since the normal vector is normalized, we just use the dot product
-//    // (see: https://www.webmatematik.dk/lektioner/sarligt-for-htx/vektorer-i-planen/projektion-fra-enhedsvektor)
-//    // Also eq. 2 from pdf
-//    float contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
-
-//    // Negative velocity means the entities are moving away from each other
-//    // In that case there is no need for collision resolution
-//    if(contactSpeed < 0)
-//        return;
-
-//    // Calculate a combined restitution or bounciness
-//    float e = m.entityA->restitution*m.entityB->restitution;
-
-//    // Create an impulse scalar (eq. 6 from pdf)
-//    // NOTE: The formula has been changed from eq. 6 to use contact speed instead of relative velocity
-//    // This makes it a litte simpler, but we have to use a square root for normalization, which inhibits performance
-//    float j = -(1+e)*contactSpeed/(1/m.entityA->mass + 1/m.entityB->mass);
-
-//    // Eq. 8.a to calculate speed change from impulse
-//    Vec2d impulseA = (m.normal * j)/m.entityA->mass;
-//    Vec2d impulseB = (m.normal * j)/m.entityB->mass;
-
-//    // From newtons third law, an action has an opposite reaction, therefore
-//    // when we add velocity to one object we remove from another
-//    m.entityA->velocity -= impulseA;
-//    m.entityB->velocity += impulseB;
-
     const bool staticA = m.entityA->type == SimType::Static;
-     const bool staticB = m.entityB->type == SimType::Static;
+    const bool staticB = m.entityB->type == SimType::Static;
 
-     if(staticA && staticB) // Both entities are static, no need for collision resolution
-         return;
+    if(staticA && staticB) // Both entities are static, no need for collision resolution
+        return;
 
-     // We zero out velocity if static
-     Vec2d velocityA = staticA? Vec2d() : m.entityA->velocity;
-     Vec2d velocityB = staticB? Vec2d() : m.entityB->velocity;
+    // We zero out velocity if static
+    if(staticA) {
+        m.entityA->velocity = Vec2d();
+        m.entityA->angularVelocity = 0;
+    }
+    if(staticB) {
+        m.entityB->velocity = Vec2d();
+        m.entityB->angularVelocity = 0;
+    }
 
-     // TODO: Relative velocity should take angulare velocity into account using distance from contact point
-     Vec2d relativeVelocity = velocityB - velocityA;
+    // Calculate radius from contactpoint to center
+    Vec2d radiusA = m.collisionPoint - m.entityA->position;
+    Vec2d radiusB = m.collisionPoint - m.entityB->position;
 
-     // We can find the speed of the entities relative to the contact point by
-     // projecting the relative velocity onto the normal vector.
-     // Since the normal vector is normalized, we just use the dot product
-     // (see: https://www.webmatematik.dk/lektioner/sarligt-for-htx/vektorer-i-planen/projektion-fra-enhedsvektor)
-     float contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
+    // Equation 7 from the linked pdf
+    Vec2d relativeVelocity = m.entityB->velocity + radiusB.Orthogonal() * m.entityB->angularVelocity -
+                             m.entityA->velocity + radiusA.Orthogonal() * m.entityA->angularVelocity;
 
-     // We should precalculate the inverse mass in the constructor
-     float inverseMassA = 1/m.entityA->mass;
-     float inverseMassB = 1/m.entityB->mass;
+    // We can find the speed of the entities relative to the contact point by
+    // projecting the relative velocity onto the normal vector.
+    // Since the normal vector is normalized, we just use the dot product
+    // (see: https://www.webmatematik.dk/lektioner/sarligt-for-htx/vektorer-i-planen/projektion-fra-enhedsvektor)
+    // Also eq. 2 from pdf
+    float contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
 
-     // Negative velocity means the entities are moving away from each other
-     // In that case there is no need for collision resolution
-     if(contactSpeed < 0)
-         return;
+    // Negative velocity means the entities are moving away from each other
+    // In that case there is no need for collision resolution
+    if(contactSpeed < 0)
+        return;
 
-     // Calculate a combined restitution or bounciness
-     float e = m.entityA->restitution*m.entityB->restitution;
+    // Calculate a combined restitution or bounciness
+    float e = m.entityA->restitution*m.entityB->restitution;
 
-     // Create an impulse scalar
-     float j = -(1+e)*contactSpeed/(inverseMassA + inverseMassB);
+    // Create an impulse scalar (eq. 6 from pdf)
+    // NOTE: The formula has been changed from eq. 6 to use contact speed instead of relative velocity
+    // This makes it a litte simpler, but we have to use a square root for normalization, which inhibits performance
+    float j = -(1+e)*Vec2d::Dot(relativeVelocity, m.normal)/
+            (Vec2d::Dot(m.normal, m.normal)*(1/m.entityA->mass + 1/m.entityB->mass)+
+             pow(Vec2d::Dot(radiusA.Orthogonal(), m.normal), 2)/m.entityA->momentOfInertia +
+             pow(Vec2d::Dot(radiusB.Orthogonal(), m.normal), 2)/m.entityB->momentOfInertia);
 
-     Vec2d impulse = m.normal * j;
+    // Eq. 8.a to calculate speed change from impulse
+    Vec2d impulseA = (m.normal * j)/m.entityA->mass;
+    Vec2d impulseB = (m.normal * j)/m.entityB->mass;
 
-     // Use impulse to modify speed
-     m.entityA->velocity -= impulse * inverseMassA;
-     m.entityB->velocity += impulse * inverseMassB;
+    // From newtons third law, an action has an opposite reaction, therefore
+    // when we add velocity to one object we remove from another
+    m.entityA->velocity -= impulseA;
+    m.entityB->velocity += impulseB;
 
+    m.entityA->angularVelocity -= Vec2d::Dot(radiusA.Orthogonal(), m.normal*j)/m.entityA->momentOfInertia;
+    m.entityB->angularVelocity += Vec2d::Dot(radiusB.Orthogonal(), m.normal*j)/m.entityB->momentOfInertia;
+
+    ImGui::Begin("Yeet");
+    ImGui::Text(fmt::format("Angular velocity: {}", m.entityA->angularVelocity).c_str());
+    ImGui::End();
 
     // Calculate friction
     // Since we have updated the velocoties, we need to redo the earlier calculations
-    velocityA = staticA? Vec2d() : m.entityA->velocity;
-    velocityB = staticB? Vec2d() : m.entityB->velocity;
-    relativeVelocity = velocityB - velocityA;
+    if(staticA) {
+        m.entityA->velocity = Vec2d();
+        m.entityA->angularVelocity = 0;
+    }
+    if(staticB) {
+        m.entityB->velocity = Vec2d();
+        m.entityB->angularVelocity = 0;
+    }
+    relativeVelocity = m.entityB->velocity + radiusB.Orthogonal() * m.entityB->angularVelocity -
+            m.entityA->velocity + radiusA.Orthogonal() * m.entityA->angularVelocity;
     contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
 
     // We create a tangent vector to the incident face, which descripes the friction force direction
@@ -124,18 +106,22 @@ void Util::ResolveImpulse(Manifold &m)
         friction = tangent * -j * dynamicFriction; // otherwise dynamic friciton
 
     // Apply friction impulses
-    if(!staticA)
+    if(!staticA) {
         m.entityA->velocity += friction/m.entityA->mass;
-    if(!staticB)
+        m.entityA->angularVelocity += Vec2d::Dot(radiusA.Orthogonal(), friction)/m.entityA->momentOfInertia;
+    }
+    if(!staticB) {
         m.entityB->velocity -= friction/m.entityB->mass;
+        m.entityB->angularVelocity -= Vec2d::Dot(radiusB.Orthogonal(), friction)/m.entityB->momentOfInertia;
+    }
 }
 
 void Util::ResolvePosition(Manifold &m)
 {
     // Position resolution is about reducing the penetration depth a certain percantage
     // to prevent objects from sinking
-    float maxDepth= 0.05f;
-    float correctionPercentage = 0.4f;
+    float maxDepth= 0.1f;
+    float correctionPercentage = 1.f;
     float correctionScalar = (std::max(m.depth - maxDepth, 0.0f)*m.entityA->mass*m.entityB->mass/(m.entityA->mass + m.entityB->mass));
     Vec2d correction = m.normal * correctionScalar * correctionPercentage;
     m.entityA->position += m.entityA->type == SimType::Dynamic? correction / m.entityA->mass : Vec2d();

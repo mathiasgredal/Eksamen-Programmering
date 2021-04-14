@@ -1,5 +1,8 @@
 #pragma once
 #include <memory>
+#include <imgui.h>
+#include <fmt/core.h>
+
 
 class Manifold;
 

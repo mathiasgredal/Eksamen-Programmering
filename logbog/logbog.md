@@ -13,3 +13,7 @@ I dag har vi lavet alle klasserne klar til implementering. Vi har også lavet et
 #### Logbog 2021-04-12
 
 I dag har vi diskuteret hvad der er blevet lavet over weekenden, samt hvad vi skal arbejde videre med og hvad vi har brug for hjælp med. Vi har desuden testet det kode, som er blevet skrevet, ved manuelle tests hvor både ydeevne og grænsetilfælde(hvor mange objekter kan programmet håndtere osv.). Der blev fundet grafiske fejl ved mange elementer. 
+
+#### Logbog 2021-04-14
+
+I dag blev der arbejdet med at integrere rotation ind koden, og nu kan objekter roterer men der er problemer med vinkelhastigheden ved friktion, hvilket der skal arbejdes videre med. 

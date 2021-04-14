@@ -17,8 +17,8 @@ public:
     Vec2d force = Vec2d(0, 0);
 
     // Rotational motion
-    float rotation = 0;
-    float angularVelocity = 0;
+    float rotation = 1;
+    float angularVelocity = 0.1;
     float torque = 0;
 
     // Dynamics
