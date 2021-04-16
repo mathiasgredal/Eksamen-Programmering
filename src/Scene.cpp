@@ -47,7 +47,6 @@ void Scene::Step(float dT)
 
             // Resolve velocity
             entity->position += entity->velocity * dT;
-            entity->rotation += entity->angularVelocity * dT;
 
             // Resolve collisions with position correction
             for(auto& collision : collisions)

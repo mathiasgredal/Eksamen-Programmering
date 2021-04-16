@@ -18,12 +18,9 @@ public:
 
     // Rotational motion
     float rotation = 1;
-    float angularVelocity = 0.1;
-    float torque = 0;
 
     // Dynamics
     float mass = 1;
-    float momentOfInertia = 1;
     float restitution = 1;
     float staticFriction = 0.1;
     float dynamicFriction = 0.1;

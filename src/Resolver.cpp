@@ -16,11 +16,9 @@ void Util::ResolveImpulse(Manifold &m)
     // We zero out velocity if static
     if(staticA) {
         m.entityA->velocity = Vec2d();
-        m.entityA->angularVelocity = 0;
     }
     if(staticB) {
         m.entityB->velocity = Vec2d();
-        m.entityB->angularVelocity = 0;
     }
 
     // Calculate radius from contactpoint to center
@@ -28,8 +26,7 @@ void Util::ResolveImpulse(Manifold &m)
     Vec2d radiusB = m.collisionPoint - m.entityB->position;
 
     // Equation 7 from the linked pdf
-    Vec2d relativeVelocity = m.entityB->velocity + radiusB.Orthogonal() * m.entityB->angularVelocity -
-                             m.entityA->velocity + radiusA.Orthogonal() * m.entityA->angularVelocity;
+    Vec2d relativeVelocity = m.entityB->velocity - m.entityA->velocity;
 
     // We can find the speed of the entities relative to the contact point by
     // projecting the relative velocity onto the normal vector.
@@ -49,10 +46,7 @@ void Util::ResolveImpulse(Manifold &m)
     // Create an impulse scalar (eq. 6 from pdf)
     // NOTE: The formula has been changed from eq. 6 to use contact speed instead of relative velocity
     // This makes it a litte simpler, but we have to use a square root for normalization, which inhibits performance
-    float j = -(1+e)*Vec2d::Dot(relativeVelocity, m.normal)/
-            (Vec2d::Dot(m.normal, m.normal)*(1/m.entityA->mass + 1/m.entityB->mass)+
-             pow(Vec2d::Dot(radiusA.Orthogonal(), m.normal), 2)/m.entityA->momentOfInertia +
-             pow(Vec2d::Dot(radiusB.Orthogonal(), m.normal), 2)/m.entityB->momentOfInertia);
+    float j = -(1+e)*contactSpeed/(1/m.entityA->mass + 1/m.entityB->mass);
 
     // Eq. 8.a to calculate speed change from impulse
     Vec2d impulseA = (m.normal * j)/m.entityA->mass;
@@ -63,25 +57,15 @@ void Util::ResolveImpulse(Manifold &m)
     m.entityA->velocity -= impulseA;
     m.entityB->velocity += impulseB;
 
-    m.entityA->angularVelocity -= Vec2d::Dot(radiusA.Orthogonal(), m.normal*j)/m.entityA->momentOfInertia;
-    m.entityB->angularVelocity += Vec2d::Dot(radiusB.Orthogonal(), m.normal*j)/m.entityB->momentOfInertia;
-
-    ImGui::Begin("Yeet");
-    ImGui::Text(fmt::format("Angular velocity: {}", m.entityA->angularVelocity).c_str());
-    ImGui::End();
-
     // Calculate friction
     // Since we have updated the velocoties, we need to redo the earlier calculations
     if(staticA) {
         m.entityA->velocity = Vec2d();
-        m.entityA->angularVelocity = 0;
     }
     if(staticB) {
         m.entityB->velocity = Vec2d();
-        m.entityB->angularVelocity = 0;
     }
-    relativeVelocity = m.entityB->velocity + radiusB.Orthogonal() * m.entityB->angularVelocity -
-            m.entityA->velocity + radiusA.Orthogonal() * m.entityA->angularVelocity;
+    relativeVelocity = m.entityB->velocity - m.entityA->velocity;
     contactSpeed = Vec2d::Dot(relativeVelocity, m.normal);
 
     // We create a tangent vector to the incident face, which descripes the friction force direction
@@ -108,11 +92,9 @@ void Util::ResolveImpulse(Manifold &m)
     // Apply friction impulses
     if(!staticA) {
         m.entityA->velocity += friction/m.entityA->mass;
-        m.entityA->angularVelocity += Vec2d::Dot(radiusA.Orthogonal(), friction)/m.entityA->momentOfInertia;
     }
     if(!staticB) {
         m.entityB->velocity -= friction/m.entityB->mass;
-        m.entityB->angularVelocity -= Vec2d::Dot(radiusB.Orthogonal(), friction)/m.entityB->momentOfInertia;
     }
 }
 
