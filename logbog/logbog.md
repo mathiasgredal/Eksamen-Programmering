@@ -17,3 +17,7 @@ I dag har vi diskuteret hvad der er blevet lavet over weekenden, samt hvad vi sk
 #### Logbog 2021-04-14
 
 I dag blev der arbejdet med at integrere rotation ind koden, og nu kan objekter roterer men der er problemer med vinkelhastigheden ved friktion, hvilket der skal arbejdes videre med. 
+
+#### Logbog 2021-04-21
+
+I dag blev der ikke arbejdet så meget med koden, ud over at rotationsfunktionaliteten er blevet flyttet over i en anden branch, da koden stadig har problemer. Ud over dette så er flowcharten blevet lavet færdig, dog så er den ret kompleks, og mangler stadig dele såsom museklik, så man kunne overveje om man bør splitte den op. 
