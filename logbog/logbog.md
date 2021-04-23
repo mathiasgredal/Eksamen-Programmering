@@ -9,3 +9,15 @@ I dag fremlagde vi ville arbejde med. Resten af timen blev brugt til vidensindsa
 #### Logbog 2021-04-9
 
 I dag har vi lavet alle klasserne klar til implementering. Vi har også lavet et klassediagram, som vi kan støtte det op af. Filstrukteren er sat op med trelagsstruktur og er klar til at arbejdes på... 
+
+#### Logbog 2021-04-12
+
+I dag har vi diskuteret hvad der er blevet lavet over weekenden, samt hvad vi skal arbejde videre med og hvad vi har brug for hjælp med. Vi har desuden testet det kode, som er blevet skrevet, ved manuelle tests hvor både ydeevne og grænsetilfælde(hvor mange objekter kan programmet håndtere osv.). Der blev fundet grafiske fejl ved mange elementer. 
+
+#### Logbog 2021-04-14
+
+I dag blev der arbejdet med at integrere rotation ind koden, og nu kan objekter roterer men der er problemer med vinkelhastigheden ved friktion, hvilket der skal arbejdes videre med. 
+
+#### Logbog 2021-04-21
+
+I dag blev der ikke arbejdet så meget med koden, ud over at rotationsfunktionaliteten er blevet flyttet over i en anden branch, da koden stadig har problemer. Ud over dette så er flowcharten blevet lavet færdig, dog så er den ret kompleks, og mangler stadig dele såsom museklik, så man kunne overveje om man bør splitte den op. 

@@ -43,14 +43,14 @@ void Scene::Step(float dT)
 
             // Resolve collisions with impulse
             for(auto& collision : collisions)
-                collision.ResolveImpulse();
+                Util::ResolveImpulse(collision);
 
             // Resolve velocity
             entity->position += entity->velocity * dT;
 
             // Resolve collisions with position correction
             for(auto& collision : collisions)
-                collision.ResolvePosition();
+                Util::ResolvePosition(collision);
 
             // Clear forces
             entity->force = Vec2d();

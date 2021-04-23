@@ -1,14 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <cmath>
+
 #include "../Vec2d.h"
 class Entity;
 
 class Manifold {
 public:
-    Manifold();
-    void ResolveImpulse();
-    void ResolvePosition();
-
     std::shared_ptr<Entity> entityA;
     std::shared_ptr<Entity> entityB;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 class Vec2d
 {
 public:
@@ -10,6 +12,7 @@ public:
 
     float Length() const;
     Vec2d Normalized() const;
+    Vec2d Orthogonal() const;
 
     Vec2d operator*(float a) const;
     Vec2d operator/(float a) const;

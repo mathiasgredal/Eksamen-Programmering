@@ -5,7 +5,7 @@ auto App::glfw_errorCallback(int error, const char *description) -> void
     throw std::runtime_error(fmt::format("ERROR{}: {}", error, description));
 }
 
-auto App::glfw_windowResizeCallback(GLFWwindow *window, int width, int height) -> void
+auto App::glfw_windowResizeCallback(__attribute__((unused)) GLFWwindow *window, int width, int height) -> void
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
     app->m_windowWidth = width;
@@ -32,9 +32,6 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
     // Handle window resize
     glfwSetWindowSizeCallback(m_window, App::glfw_windowResizeCallback);
     glfwSetWindowUserPointer(m_window, (void *)this);
-
-    // Handle mouse events
-    glfwSetMouseButtonCallback(m_window, App::onMousePress);
 
     // Calling renderFrame before init sets main thread to be render thread
     // See: https://bkaradzic.github.io/bgfx/internals.html
@@ -63,7 +60,6 @@ auto App::createWindow(bgfx::RendererType::Enum backend) -> void
 
 App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewId(0)
 {
-
     // Create window with GLFW
     createWindow(backend);
 
@@ -87,31 +83,6 @@ App::App(bgfx::RendererType::Enum backend, bool _vsync) : vsync(_vsync), m_viewI
 
     auto emojiFile = fs.open("fonts/NotoEmoji-Regular.ttf");
     nvgCreateFontMem(m_ctx, "emoji", Util::getFileData(emojiFile) ,emojiFile.size(), 0);
-	
-	//create level
-    m_level = Scene();
-
-    // Create a line
-    auto line = std::make_shared<Line>(0.2, 500);
-    auto entity = std::make_shared<Entity>(Vec2d(550, 700), line);
-
-    entity->rotation = 0;
-    entity->mass = 100;
-    entity->restitution = 0.9;
-    entity->dynamicFriction = 0.2;
-    entity->staticFriction = 0.3;
-    entity->type = SimType::Static;
-
-    // Clone the previous line
-    auto line2 = std::make_shared<Line>(-0.2, 800);
-    auto entity2 = std::make_shared<Entity>(*entity);
-    entity2->shape = line2;
-    entity2->dynamicFriction = 0;
-    entity2->staticFriction = 0;
-
-    // Add the lines to the level
-    m_level.Add(entity);
-    m_level.Add(entity2);
 }
 
 App::~App()
@@ -132,6 +103,7 @@ auto App::run() -> void
     while (!glfwWindowShouldClose(m_window)) {
         auto t_start = Clock::now();
         glfwPollEvents();
+        // Run physics
 
         // Clear screen
         bgfx::setViewRect(0, 0, 0, getWindowWidth(), getWindowHeight());
@@ -139,6 +111,7 @@ auto App::run() -> void
 
         // Draw ImGui
         ImGui_ImplGlfw_NewFrame();
+
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2( getWindowWidth(), getWindowHeight());
         io.DisplayFramebufferScale = ImVec2(m_scale, m_scale);
@@ -146,17 +119,16 @@ auto App::run() -> void
         glfwGetCursorPos(m_window, &mx, &my);
         io.MousePos = ImVec2(mx*m_scale, my*m_scale);
 
+        std::cout << "SCALE: " << m_scale << std::endl;
+
+        // Setup Dear ImGui style
         ImGuiStyle& style = ImGui::GetStyle();
-        ImGuiStyle styleold = style;
-        style = ImGuiStyle();
+        ImGuiStyle styleold = style; // Backup colors
+        style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
         style.ScaleAllSizes(m_scale);
-        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors));
+        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
 
         ImGui::NewFrame();
-
-        // Run physics
-        m_level.Step(ImGui::GetIO().DeltaTime);
-
         drawGUI();
         imguiEndFrame();
 
@@ -177,26 +149,22 @@ auto App::run() -> void
 ///
 auto App::drawVG() -> void
 {
-    // Draw scene entities
-    for(auto entity : m_level.getEntities()) {
-        entity->shape->Draw(m_ctx, entity);
-    }
+    nvgBeginPath(m_ctx);
+    nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
+    nvgStrokeWidth(m_ctx, 15);
+    nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
+    nvgLineJoin(m_ctx, NVG_BEVEL);
+    nvgStroke(m_ctx);
 
-//    nvgBeginPath(m_ctx);
-//    nvgRect(m_ctx, 40, getWindowHeight()-getWindowHeight()*0.3, 100, 150);
-//    nvgStrokeWidth(m_ctx, 15);
-//    nvgStrokeColor(m_ctx, nvgRGB(20, 250, 10));
-//    nvgLineJoin(m_ctx, NVG_BEVEL);
-//    nvgStroke(m_ctx);
+    nvgFontSize(m_ctx, 36);
+    nvgFontFace(m_ctx, "regular");
+    nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
 
-//    nvgFontSize(m_ctx, 36);
-//    nvgFontFace(m_ctx, "regular");
-//    nvgText(m_ctx, 150, getWindowHeight()-getWindowHeight()*0.2, "This is some text", NULL);
+    nvgFontSize(m_ctx, 36*4);
+    nvgFontFace(m_ctx, "emoji");
+    nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
+    nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
 
-//    nvgFontSize(m_ctx, 36*4);
-//    nvgFontFace(m_ctx, "emoji");
-//    nvgFillColor(m_ctx, nvgRGB(200, 10, 10));
-//    nvgText(m_ctx, 30, getWindowHeight()-getWindowHeight()*0.4, "😃🎉🍆", NULL);
 }
 
 
@@ -209,7 +177,6 @@ auto App::drawGUI() -> void
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::Begin("Stats");
     ImGui::Text(fmt::format("Backend: {}", bgfx::getRendererName( bgfx::getRendererType())).c_str());
-    ImGui::Text(fmt::format("Entities: {}", (int)m_level.getEntities().size()).c_str());
     ImGui::Text(fmt::format("FPS: {:.1f}", ImGui::GetIO().Framerate).c_str());
 
     float cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(t_end-t_begin).count()/1000000.f;
@@ -250,45 +217,4 @@ auto App::getWindowWidth() -> int
     int width;
     glfwGetFramebufferSize(m_window, &width, nullptr);
     return width;
-}
-
-void App::onMousePress(GLFWwindow *window, int button, int state, int modifiers)
-{
-    auto app = (App*)glfwGetWindowUserPointer(window);
-
-    double x, y;
-    glfwGetCursorPos(app->m_window, &x, &y);
-    auto mousePos = Vec2d(x,y)*app->m_scale;
-
-    if(button == GLFW_MOUSE_BUTTON_LEFT && state == GLFW_PRESS) {
-        auto circle = std::make_shared<Circle>(15); // Make a circle with radius 15
-        auto entity = std::make_shared<Entity>(mousePos, circle); // Create an entity at the mouse position with the circle shape
-
-        // Set properties for the entity
-        entity->rotation = 0;
-        entity->mass = 10;
-        entity->restitution = 0.9;
-        entity->dynamicFriction = 0.05;
-        entity->staticFriction = 0.1;
-        entity->type = SimType::Dynamic; // Dynamic means the object can move
-
-        // Spawn the entity by adding it to the level
-        app->m_level.Add(entity);
-    }
-
-    if(button == GLFW_MOUSE_BUTTON_RIGHT  && state == GLFW_PRESS) {
-        auto circle = std::make_shared<Circle>(80); // Make a circle with radius 80
-        auto entity = std::make_shared<Entity>(mousePos, circle); // Create an entity at the mouse position with the circle shape
-
-        // Set properties for the entity
-        entity->rotation = 0;
-        entity->mass = 1000;
-        entity->restitution = 0.9;
-        entity->dynamicFriction = 0.05;
-        entity->staticFriction = 0.1;
-        entity->type = SimType::Dynamic; // Dynamic means the object can move
-
-        // Spawn the entity by adding it to the level
-        app->m_level.Add(entity);
-    }
 }
