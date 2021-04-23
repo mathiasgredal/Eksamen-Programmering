@@ -1,0 +1,1 @@
+![Klassediagram](./Klassediagram.png)

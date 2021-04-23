@@ -21,3 +21,7 @@ I dag blev der arbejdet med at integrere rotation ind koden, og nu kan objekter 
 #### Logbog 2021-04-21
 
 I dag blev der ikke arbejdet så meget med koden, ud over at rotationsfunktionaliteten er blevet flyttet over i en anden branch, da koden stadig har problemer. Ud over dette så er flowcharten blevet lavet færdig, dog så er den ret kompleks, og mangler stadig dele såsom museklik, så man kunne overveje om man bør splitte den op. 
+
+#### Logbog 2021-04-23
+
+I dag blev rydtet nogle unødvendige filer og variabler og der arbejdet med klassediagrammet. Der blev også kigget tilbage på rotationsfunktionaliteten og der er blevet lavet nogle planer i forhold til hvordan man får det til at virke. Det mistænkes at være friktionen, som får objekterne til at dreje meget hurtigt rundt. Lige nu er friktion blevet implementeret med impulser, hvor man modificere objektets hastighed direkte. Dette gør dog beregningerne mere komplekse, og det kan være svært at holde øje med om man overholder loven om energikonservering, da hvis man sætter friktionen meget højt, så får friktionen objektet til at flyve tilbage. Hvis man i stedet beregner friktion med krafter og drejningsmoment, så burde det blive simplere at beregne og gøre rotationen mere stabil.

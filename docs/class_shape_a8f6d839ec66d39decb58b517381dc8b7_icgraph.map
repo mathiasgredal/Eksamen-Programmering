@@ -1,0 +1,6 @@
+<map id="Shape::IsColliding" name="Shape::IsColliding">
+<area shape="rect" id="node1" title=" " alt="" coords="216,56,355,83"/>
+<area shape="rect" id="node2" href="$class_rectangle.html#ac7412f9fb338e3ac51800a31d70ea956" title=" " alt="" coords="5,5,168,32"/>
+<area shape="rect" id="node3" href="$class_circle.html#a0e4919e1ebab8f64f0dbd65db68c9537" title=" " alt="" coords="19,56,154,83"/>
+<area shape="rect" id="node4" href="$class_line.html#a6ef183aef29d4ec85cc7925c0a4c27d3" title=" " alt="" coords="24,107,149,133"/>
+</map>

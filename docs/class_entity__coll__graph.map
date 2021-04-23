@@ -1,0 +1,10 @@
+<map id="Entity" name="Entity">
+<area shape="rect" id="node1" title=" " alt="" coords="284,364,344,391"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,215,164,256"/>
+<area shape="rect" id="node3" title=" " alt="" coords="189,222,266,249"/>
+<area shape="rect" id="node4" title=" " alt="" coords="341,95,391,121"/>
+<area shape="rect" id="node8" href="$class_vec2d.html" title=" " alt="" coords="443,222,505,249"/>
+<area shape="rect" id="node5" title=" " alt="" coords="529,222,718,249"/>
+<area shape="rect" id="node6" href="$class_shape.html" title=" " alt="" coords="592,95,655,121"/>
+<area shape="rect" id="node7" title=" " alt="" coords="582,5,665,32"/>
+</map>

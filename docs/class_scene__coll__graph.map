@@ -1,0 +1,13 @@
+<map id="Scene" name="Scene">
+<area shape="rect" id="node1" title=" " alt="" coords="31,647,92,673"/>
+<area shape="rect" id="node2" title=" " alt="" coords="87,543,265,584"/>
+<area shape="rect" id="node3" title=" " alt="" coords="123,453,309,480"/>
+<area shape="rect" id="node4" href="$class_entity.html" title=" " alt="" coords="186,364,246,391"/>
+<area shape="rect" id="node5" title=" " alt="" coords="559,215,718,256"/>
+<area shape="rect" id="node6" title=" " alt="" coords="91,222,168,249"/>
+<area shape="rect" id="node7" title=" " alt="" coords="175,95,225,121"/>
+<area shape="rect" id="node11" href="$class_vec2d.html" title=" " alt="" coords="5,222,67,249"/>
+<area shape="rect" id="node8" title=" " alt="" coords="345,222,535,249"/>
+<area shape="rect" id="node9" href="$class_shape.html" title=" " alt="" coords="409,95,471,121"/>
+<area shape="rect" id="node10" title=" " alt="" coords="399,5,481,32"/>
+</map>
