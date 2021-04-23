@@ -1,0 +1,152 @@
+@startuml Klassediagram
+
+enum SimType {
+    Dynamic
+    Static
+    Ghost
+}
+
+abstract class Shape {
+    + NVGColor color
+    + virtual void Draw(ctx, entity) const
+    + virtual Manifold IsColliding(entityA, entityB, Shape* shapeB)
+    + virtual Manifold IsColliding(entityA, entityB, Circle* shapeB)
+    + virtual Manifold IsColliding(entityA, entityB, Rectangle* shapeB)
+    + virtual Manifold IsColliding(entityA, entityB, Line* shapeB)
+}
+
+class Circle implements Shape {
+    + Circle(_radius)
+    + float radius
+    + void Draw(ctx, entity) const override
+    + Manifold IsColliding(entityA, entityB, Shape* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Circle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Rectangle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Line* shapeB) override
+}
+
+class Line implements Shape {
+    + Line(_a, _b)
+    + float a
+    + float b
+    + void Draw(ctx, entity) const override
+    + Manifold IsColliding(entityA, entityB, Shape* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Circle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Rectangle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Line* shapeB) override
+}
+
+class Rectangle implements Shape {
+    + Rectangle(_width, _height)
+    + float width
+    + float height
+    + void Draw(ctx, entity) const override
+    + Manifold IsColliding(entityA, entityB, Shape* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Circle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Rectangle* shapeB) override
+    + Manifold IsColliding(entityA, entityB, Line* shapeB) override
+}
+
+class Manifold {
+    + Entity* entityA
+    + Entity* entityB
+    + Vec2d collisionPoint
+    + Vec2d normal
+    + float depth
+    + bool isColliding
+}
+
+class Vec2d {
+    + Vec2d()
+    + Vec2d(float _x, float _y)
+
+    + float Length() const
+    + Vec2d Normalized() const
+    + Vec2d Orthogonal() const
+    + float Dot(const Vec2d& a, const Vec2d& b)
+
+    + Vec2d &operator+=(const Vec2d& a)
+    + Vec2d &operator-=(const Vec2d& a)
+
+    + Vec2d operator*(float a) const
+    + Vec2d operator/(float a) const
+    + Vec2d operator+(const Vec2d& a) const
+    + Vec2d operator-(const Vec2d& a) const
+    + float x 
+    + float y
+}
+
+class Entity {
+    + Entity(_pos, _shape)
+    + Vec2d position
+    + Vec2d velocity
+    + Vec2d force
+    + float rotation
+    + float angularVelocity
+    + float torque
+    + float mass
+    + float momentOfInertia 
+    + float restitution
+    + float staticFriction
+    + float dynamicFriction
+    + std::shared_ptr<Shape> shape
+    + SimType type
+    + Manifold IsColliding(Entity* other)
+}
+
+class Scene {
+    + Scene()
+    + Scene(std::vector<Entity*> _entities)
+    + void Add(Entity* entity)
+    + void Step(float dT)
+    + std::vector<Entity*> getEntities() const
+    - std::vector<Entity*> entities
+    - Vec2d gravity_coeff
+}
+
+class App {
+    + App(backend, vsync)
+    + ~App()
+    + void run()
+    
+    - void glfw_errorCallback(error, description)
+    - void glfw_windowResizeCallback(window, width, height)
+
+    - void createWindow(backend)
+    - void drawGUI()
+    - void drawVG()
+    - int getWindowHeight()
+    - int getWindowWidth()
+
+    - void onMousePress(window, button, state, modifiers)
+
+    - GLFWwindow* m_window
+    - string project_name
+    - int m_windowHeight
+    - int m_windowWidth
+    - float m_scale
+
+    - const ViewId m_viewId
+    - NVGcontext* m_ctx
+    - Scene m_level
+
+    - time_point<Clock> t_begin
+    - time_point<Clock> t_end
+}
+
+Scene -[hidden]> Entity
+
+
+App *--|| Scene
+Scene *--o{ Entity
+Scene *--{ Vec2d
+Entity *--|| Shape
+Entity *--{ Vec2d
+Entity *--|| SimType
+
+
+Manifold o--{ Entity
+Manifold *--{ Vec2d
+
+
+@enduml
