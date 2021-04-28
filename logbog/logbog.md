@@ -33,3 +33,6 @@ Fokus i fremlæggelser:
 - David Jacobsen: Kollisionsdetektering, GUI(rendering, håndtering af museklik), tilhørende tests(tegnes GUI ens på tværs af platforme, fejl i kollisionsdetektering ved f.eks. høje hastigheder)
 - Mathias Gredal: Kinematik, datastruktur, tilhørende tests(ydeevne med mange objekter, vibrere objekter når de bør ligge stille, synker tunge objekter, hvordan håndteres objekter som befinder sig inde i andre objekter)
 
+#### Logbog 2021-28-04
+
+vi fandt ud af windows er præinstalleret med rektangel funkktionailitet. Dette fuckede programmet fuldstændig op og tog en dag at debugge.
