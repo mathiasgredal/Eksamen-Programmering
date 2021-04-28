@@ -24,4 +24,12 @@ I dag blev der ikke arbejdet så meget med koden, ud over at rotationsfunktional
 
 #### Logbog 2021-04-23
 
-I dag blev rydtet nogle unødvendige filer og variabler og der arbejdet med klassediagrammet. Der blev også kigget tilbage på rotationsfunktionaliteten og der er blevet lavet nogle planer i forhold til hvordan man får det til at virke. Det mistænkes at være friktionen, som får objekterne til at dreje meget hurtigt rundt. Lige nu er friktion blevet implementeret med impulser, hvor man modificere objektets hastighed direkte. Dette gør dog beregningerne mere komplekse, og det kan være svært at holde øje med om man overholder loven om energikonservering, da hvis man sætter friktionen meget højt, så får friktionen objektet til at flyve tilbage. Hvis man i stedet beregner friktion med krafter og drejningsmoment, så burde det blive simplere at beregne og gøre rotationen mere stabil.
+I dag blev ryddet nogle unødvendige filer og variabler og der blev arbejdet med klassediagrammet. Der blev også kigget tilbage på rotationsfunktionaliteten og der er blevet lavet nogle planer i forhold til hvordan man får det til at virke. Det mistænkes at være friktionen, som får objekterne til at dreje meget hurtigt rundt. Lige nu er friktion blevet implementeret med impulser, hvor man modificere objektets hastighed direkte. Dette gør dog beregningerne mere komplekse, og det kan være svært at holde øje med om man overholder loven om energikonservering, da hvis man sætter friktionen meget højt, så får friktionen objektet til at flyve tilbage. Hvis man i stedet beregner friktion med krafter og drejningsmoment, så burde det blive simplere at beregne og gøre rotationen mere stabil.
+
+#### Logbog 2021-04-26
+
+Fokus i fremlæggelser:
+
+- David Jacobsen: Kollisionsdetektering, GUI(rendering, håndtering af museklik), tilhørende tests(tegnes GUI ens på tværs af platforme, fejl i kollisionsdetektering ved f.eks. høje hastigheder)
+- Mathias Gredal: Kinematik, datastruktur, tilhørende tests(ydeevne med mange objekter, vibrere objekter når de bør ligge stille, synker tunge objekter, hvordan håndteres objekter som befinder sig inde i andre objekter)
+

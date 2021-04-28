@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "../Vec2d.h"
 #include "Shape.h"
 
