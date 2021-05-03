@@ -33,3 +33,6 @@ Fokus i fremlæggelser:
 - David Jacobsen: Kollisionsdetektering, GUI(rendering, håndtering af museklik), tilhørende tests(tegnes GUI ens på tværs af platforme, fejl i kollisionsdetektering ved f.eks. høje hastigheder)
 - Mathias Gredal: Kinematik, datastruktur, tilhørende tests(ydeevne med mange objekter, vibrere objekter når de bør ligge stille, synker tunge objekter, hvordan håndteres objekter som befinder sig inde i andre objekter)
 
+#### Logbog 2021-05-03
+
+I dag blev der lavet flere kommentarer og der blev fjernet en rå pointer. Derudover er der blevet diskuteret en implementering af kollision med firkanter og koden kan nu også køre på windows
