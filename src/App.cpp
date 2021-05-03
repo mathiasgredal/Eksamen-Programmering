@@ -256,6 +256,9 @@ void App::onMousePress(GLFWwindow *window, int button, int state, int modifiers)
 {
     auto app = (App*)glfwGetWindowUserPointer(window);
 
+    if(ImGui::GetIO().WantCaptureMouse)
+        return;
+
     double x, y;
     glfwGetCursorPos(app->m_window, &x, &y);
     auto mousePos = Vec2d(x,y)*app->m_scale;
