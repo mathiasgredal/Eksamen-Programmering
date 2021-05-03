@@ -48,8 +48,7 @@ auto main(int argc, char* argv[]) -> int {
     if(result.count("disable-vsync"))
         vsync = false;
 
-
-    auto *app = new App(backend, vsync);
+    auto app = std::make_unique<App>(backend, vsync);
 
     try {
         app->run();
@@ -57,11 +56,6 @@ auto main(int argc, char* argv[]) -> int {
         std::cerr << e.what() << std::endl;
         return 1;
     }
-
-    delete app;
-
-
-    std::cout << "Hello" << std::endl;
 
     return 0;
 }

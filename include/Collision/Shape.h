@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <nanovg.h>
 
 #include "../Vec2d.h"

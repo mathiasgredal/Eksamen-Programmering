@@ -6,7 +6,6 @@
 void Util::ResolveImpulse(Manifold &m)
 {
     // Formulas can be found here: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf
-
     const bool staticA = m.entityA->type == SimType::Static;
     const bool staticB = m.entityB->type == SimType::Static;
 
@@ -14,16 +13,10 @@ void Util::ResolveImpulse(Manifold &m)
         return;
 
     // We zero out velocity if static
-    if(staticA) {
+    if(staticA)
         m.entityA->velocity = Vec2d();
-    }
-    if(staticB) {
+    if(staticB)
         m.entityB->velocity = Vec2d();
-    }
-
-    // Calculate radius from contactpoint to center
-    Vec2d radiusA = m.collisionPoint - m.entityA->position;
-    Vec2d radiusB = m.collisionPoint - m.entityB->position;
 
     // Equation 7 from the linked pdf
     Vec2d relativeVelocity = m.entityB->velocity - m.entityA->velocity;
@@ -45,7 +38,7 @@ void Util::ResolveImpulse(Manifold &m)
 
     // Create an impulse scalar (eq. 6 from pdf)
     // NOTE: The formula has been changed from eq. 6 to use contact speed instead of relative velocity
-    // This makes it a litte simpler, but we have to use a square root for normalization, which inhibits performance
+    // This makes it a litte simpler, but we have to use a square root for normalization, which inhibits a performance penalty
     float j = -(1+e)*contactSpeed/(1/m.entityA->mass + 1/m.entityB->mass);
 
     // Eq. 8.a to calculate speed change from impulse
@@ -71,7 +64,7 @@ void Util::ResolveImpulse(Manifold &m)
     // We create a tangent vector to the incident face, which descripes the friction force direction
     Vec2d tangent = (relativeVelocity - m.normal * contactSpeed ).Normalized();
 
-    // By projection the relative velocity onto the tangent we get the "sliding" speed or friction speed
+    // By projection the relative velocity onto the tangent we get the "sliding" speed
     float frictionSpeed = Vec2d::Dot(relativeVelocity, tangent);
 
     float staticFriction = sqrt(m.entityA->staticFriction * m.entityB->staticFriction);
@@ -80,6 +73,7 @@ void Util::ResolveImpulse(Manifold &m)
     // Calculate scalar for friction impulse
     float fj = -frictionSpeed / (1/m.entityA->mass + 1/m.entityB->mass);
 
+    // Dont apply small friction impulses, as it causes jitter
     if(abs(fj) < 0.001)
         return;
 
@@ -90,12 +84,10 @@ void Util::ResolveImpulse(Manifold &m)
         friction = tangent * -j * dynamicFriction; // otherwise dynamic friciton
 
     // Apply friction impulses
-    if(!staticA) {
+    if(!staticA)
         m.entityA->velocity += friction/m.entityA->mass;
-    }
-    if(!staticB) {
+    if(!staticB)
         m.entityB->velocity -= friction/m.entityB->mass;
-    }
 }
 
 void Util::ResolvePosition(Manifold &m)
