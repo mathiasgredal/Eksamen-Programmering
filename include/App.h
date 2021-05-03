@@ -33,7 +33,7 @@ CMRC_DECLARE(fonts);
 #include "Util.h"
 #include "Scene.h"
 #include "Collision/Circle.h"
-#include "Collision/Rectangle.h"
+#include "Collision/Rect.h"
 #include "Collision/Line.h"
 
 
