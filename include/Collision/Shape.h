@@ -6,7 +6,7 @@
 #include "../Vec2d.h"
 class Entity;
 class Circle;
-class Rect;
+class RectShape;
 class Line;
 class Manifold;
 
@@ -18,6 +18,6 @@ public:
 
     virtual Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Shape* shapeB) const = 0;
     virtual Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Circle* shapeB) const = 0;
-    virtual Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rect* shapeB) const = 0;
+    virtual Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const RectShape* shapeB) const = 0;
     virtual Manifold IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Line *shapeB) const = 0;
 };

@@ -32,7 +32,7 @@ Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<En
     return Util::CreateManifoldCircleVsCircle(entityA, this, entityB, shapeB);
 }
 
-Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const Rect *shapeB) const
+Manifold Circle::IsColliding(std::shared_ptr<Entity> entityA, std::shared_ptr<Entity> entityB, const RectShape *shapeB) const
 {
     // std::cout << "Circle vs Rect" << std::endl;
     Manifold manifold = Manifold();
