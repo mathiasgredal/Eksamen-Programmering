@@ -41,3 +41,7 @@ vi fandt ud af windows er præinstalleret med rektangel funkktionailitet. Dette 
 
 I dag blev der lavet flere kommentarer og der blev fjernet en rå pointer. Derudover er der blevet diskuteret en implementering af kollision med firkanter og koden kan nu også køre på windows
 
+#### Logbog 2021-05-07
+
+I dag fik vi ikke lavet så meget programmeringsmæssigt, og i stedet blev der fokuseret på synopsisen. Desuden var det også den sidste programmeringstime 😭.
+

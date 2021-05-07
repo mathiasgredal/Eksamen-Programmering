@@ -7,17 +7,17 @@
 	<key>CFBundleExecutable</key>
 	<string>demo</string>
 	<key>CFBundleGetInfoString</key>
-	<string></string>
+	<string>Demo Physics Engine</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string></string>
+	<string>com.zbc.physics</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLongVersionString</key>
 	<string></string>
 	<key>CFBundleName</key>
-	<string></string>
+	<string>Demo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
