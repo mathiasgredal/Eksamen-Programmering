@@ -95,7 +95,7 @@ void Util::ResolvePosition(Manifold &m)
     // Position resolution is about reducing the penetration depth a certain percantage
     // to prevent objects from sinking
     float maxDepth= 0.1f;
-    float correctionPercentage = 1.f;
+    float correctionPercentage = 0.5f;
     float correctionScalar = (std::max(m.depth - maxDepth, 0.0f)*m.entityA->mass*m.entityB->mass/(m.entityA->mass + m.entityB->mass));
     Vec2d correction = m.normal * correctionScalar * correctionPercentage;
     m.entityA->position += m.entityA->type == SimType::Dynamic? correction / m.entityA->mass : Vec2d();

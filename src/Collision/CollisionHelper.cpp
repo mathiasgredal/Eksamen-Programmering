@@ -32,16 +32,16 @@ Manifold Util::CreateManifoldCircleVsLine(std::shared_ptr<Entity> entityA, const
 
     // Create normal vector
     const Vec2d dir = Vec2d(0, lineB->b) - Vec2d(1, lineB->a + lineB->b);
-    manifold.normal = Vec2d(-dir.y, dir.x).Normalized() * -1;
+    manifold.normal = Vec2d(dir.y, -dir.x).Normalized();
 
     // Create vector between circle and line and project on normal vector to find distance
-    const Vec2d circToLine = entityA->position - Vec2d(0, lineB->b);
-    float distance = Vec2d::Dot(manifold.normal, circToLine);
+    const Vec2d circToLine = Vec2d(0, lineB->b) - entityA->position;
+    float distance = Vec2d::Dot(circToLine, manifold.normal);
 
-    if(distance + circleA->radius >= 0) {
+    if(distance - circleA->radius <= 0) {
         // We have a collision
         manifold.isColliding = true;
-        manifold.depth = distance + circleA->radius;
+        manifold.depth = abs(distance - circleA->radius);
         manifold.collisionPoint = entityA->position - manifold.normal * manifold.depth;
         manifold.entityA = entityB;
         manifold.entityB = entityA;
